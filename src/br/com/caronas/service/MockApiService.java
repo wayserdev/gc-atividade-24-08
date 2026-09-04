@@ -9,11 +9,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MockApiService implements ApiService {
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
     private final List<Instituicao> instituicoes = new ArrayList<>();
     private final List<Usuario> usuarios = new ArrayList<>();
     private final List<ApiCallListener> listeners = new ArrayList<>();
+    private final JwtService jwtService = new JwtService();
 
     private Usuario usuarioLogado = null;
     private String tokenJwt = null;
@@ -156,17 +157,17 @@ public class MockApiService implements ApiService {
             ));
         }
 
-        // Login padrão inicial para o Carlos Eduardo (Aluno)
-        setUsuarioLogado(alunoCarlos, generateFakeJwt(alunoCarlos));
+        // Os dados de demonstração também respeitam o contrato de segurança:
+        // o serviço nunca compara nem mantém senhas em texto puro.
+        for (Usuario usuario : usuarios) {
+            usuario.setSenhaHash(PasswordHasher.hash(usuario.getSenhaHash()));
+        }
+
+        // A aplicação inicia deslogada; o usuário precisa autenticar-se pela tela.
     }
 
-    private String generateFakeJwt(Usuario u) {
-        String header = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
-        String payload = Base64.getUrlEncoder().withoutPadding().encodeToString(
-                ("{\"sub\":\"" + u.getId() + "\",\"email\":\"" + u.getEmail() + "\",\"nivel\":\"" + u.getNivel() + "\",\"iat\":1724792400}").getBytes()
-        );
-        String signature = "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-        return header + "." + payload + "." + signature;
+    private String generateJwt(Usuario u) {
+        return jwtService.createToken(u);
     }
 
     private void notifyListeners(ApiResponse<?> response) {
@@ -179,14 +180,20 @@ public class MockApiService implements ApiService {
     public ApiResponse<AuthResponse> cadastrar(String nome, String email, String senha, String telefone, String curso, String instituicaoId) {
         String method = "POST";
         String path = "/auth/cadastrar";
-        String reqJson = String.format("{\n  \"nome_completo\": \"%s\",\n  \"email\": \"%s\",\n  \"senha\": \"******\",\n  \"telefone\": \"%s\",\n  \"curso\": \"%s\",\n  \"instituicao_id\": \"%s\"\n}",
-                nome != null ? nome : "", email != null ? email : "", telefone != null ? telefone : "", curso != null ? curso : "", instituicaoId != null ? instituicaoId : "");
+        String reqJson = "{\n"
+                + "  \"nome_completo\": " + jsonString(nome) + ",\n"
+                + "  \"email\": " + jsonString(email) + ",\n"
+                + "  \"senha\": \"******\",\n"
+                + "  \"telefone\": " + jsonString(telefone) + ",\n"
+                + "  \"curso\": " + jsonString(curso) + ",\n"
+                + "  \"instituicao_id\": " + jsonString(instituicaoId) + "\n"
+                + "}";
 
         List<String> validacaoErros = new ArrayList<>();
         if (nome == null || nome.trim().length() < 3 || nome.trim().length() > 150) {
             validacaoErros.add("nome_completo deve ter entre 3 e 150 caracteres");
         }
-        if (email == null || !EMAIL_PATTERN.matcher(email.trim()).matches()) {
+        if (email == null || !EMAIL_PATTERN.matcher(email.trim()).matches() || email.trim().length() > 150) {
             validacaoErros.add("email deve ser um e-mail válido");
         }
         if (senha == null || senha.length() < 6) {
@@ -200,6 +207,8 @@ public class MockApiService implements ApiService {
         }
         if (instituicaoId == null || instituicaoId.trim().isEmpty()) {
             validacaoErros.add("instituicao_id é obrigatório");
+        } else if (getInstituicaoById(instituicaoId.trim()) == null) {
+            validacaoErros.add("instituicao_id não pertence a uma instituição cadastrada");
         }
 
         if (!validacaoErros.isEmpty()) {
@@ -219,18 +228,19 @@ public class MockApiService implements ApiService {
             }
         }
 
-        Instituicao inst = getInstituicaoById(instituicaoId);
+        String instituicaoNormalizada = instituicaoId.trim();
+        Instituicao inst = getInstituicaoById(instituicaoNormalizada);
         String instNome = inst != null ? inst.getNome() : "Universidade Estadual";
 
         String novoId = "u" + UUID.randomUUID().toString().substring(1);
         String criadoEm = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
         Usuario novoUsuario = new Usuario(
                 novoId,
-                instituicaoId,
+                instituicaoNormalizada,
                 instNome,
                 nome.trim(),
                 email.trim(),
-                senha,
+                PasswordHasher.hash(senha),
                 "ALUNO",
                 telefone.replaceAll("[^0-9]", ""),
                 curso.trim(),
@@ -240,13 +250,12 @@ public class MockApiService implements ApiService {
         );
 
         usuarios.add(novoUsuario);
-        String token = generateFakeJwt(novoUsuario);
+        String token = generateJwt(novoUsuario);
         setUsuarioLogado(novoUsuario, token);
 
-        String respJson = String.format("{\n  \"token\": \"%s\",\n  \"usuario\": {\n    \"id\": \"%s\",\n    \"instituicao_id\": \"%s\",\n    \"nome_completo\": \"%s\",\n    \"email\": \"%s\",\n    \"nivel\": \"%s\",\n    \"telefone\": \"%s\",\n    \"curso\": \"%s\",\n    \"foto_url\": null,\n    \"media_avaliacao\": \"0.00\",\n    \"criado_em\": \"%s\"\n  }\n}",
-                token, novoId, instituicaoId, novoUsuario.getNome_completo(), novoUsuario.getEmail(), novoUsuario.getNivel(), novoUsuario.getTelefone(), novoUsuario.getCurso(), criadoEm);
+        String respJson = authToJson(token, novoUsuario);
 
-        AuthResponse auth = new AuthResponse(token, novoUsuario, "Cadastro realizado com sucesso!");
+        AuthResponse auth = new AuthResponse(token, publicCopy(novoUsuario), "Cadastro realizado com sucesso!");
         ApiResponse<AuthResponse> res = ApiResponse.ok(method, path, 201, auth, reqJson, respJson);
         notifyListeners(res);
         return res;
@@ -256,7 +265,7 @@ public class MockApiService implements ApiService {
     public ApiResponse<AuthResponse> login(String email, String senha) {
         String method = "POST";
         String path = "/auth/login";
-        String reqJson = String.format("{\n  \"email\": \"%s\",\n  \"senha\": \"******\"\n}", email != null ? email : "");
+        String reqJson = "{\n  \"email\": " + jsonString(email) + ",\n  \"senha\": \"******\"\n}";
 
         if (email == null || email.trim().isEmpty() || senha == null || senha.isEmpty()) {
             ApiError err = new ApiError(400, "Bad Request", "email e senha são obrigatórios.");
@@ -267,7 +276,7 @@ public class MockApiService implements ApiService {
 
         Usuario encontrado = null;
         for (Usuario u : usuarios) {
-            if (u.getEmail().equalsIgnoreCase(email.trim()) && u.getSenha().equals(senha)) {
+            if (u.getEmail().equalsIgnoreCase(email.trim()) && PasswordHasher.matches(senha, u.getSenhaHash())) {
                 encontrado = u;
                 break;
             }
@@ -280,14 +289,12 @@ public class MockApiService implements ApiService {
             return res;
         }
 
-        String token = generateFakeJwt(encontrado);
+        String token = generateJwt(encontrado);
         setUsuarioLogado(encontrado, token);
 
-        String respJson = String.format("{\n  \"token\": \"%s\",\n  \"usuario\": {\n    \"id\": \"%s\",\n    \"nome_completo\": \"%s\",\n    \"email\": \"%s\",\n    \"nivel\": \"%s\",\n    \"telefone\": \"%s\",\n    \"curso\": \"%s\",\n    \"foto_url\": %s,\n    \"media_avaliacao\": \"%s\"\n  }\n}",
-                token, encontrado.getId(), encontrado.getNome_completo(), encontrado.getEmail(), encontrado.getNivel(), encontrado.getTelefone(), encontrado.getCurso(),
-                encontrado.getFoto_url() != null ? "\"" + encontrado.getFoto_url() + "\"" : "null", encontrado.getMedia_avaliacao());
+        String respJson = authToJson(token, encontrado);
 
-        AuthResponse auth = new AuthResponse(token, encontrado, "Login realizado com sucesso.");
+        AuthResponse auth = new AuthResponse(token, publicCopy(encontrado), "Login realizado com sucesso.");
         ApiResponse<AuthResponse> res = ApiResponse.ok(method, path, 200, auth, reqJson, respJson);
         notifyListeners(res);
         return res;
@@ -301,12 +308,11 @@ public class MockApiService implements ApiService {
         if (!isAuthenticated()) {
             ApiError err = new ApiError(401, "Unauthorized", "Token de autenticação inválido ou expirado.");
             ApiResponse<Usuario> res = ApiResponse.fail(method, path, err, null);
-            res.addHeader("Authorization", "Bearer null");
             notifyListeners(res);
             return res;
         }
 
-        ApiResponse<Usuario> res = ApiResponse.ok(method, path, 200, usuarioLogado.clone(), null, usuarioToJson(usuarioLogado));
+        ApiResponse<Usuario> res = ApiResponse.ok(method, path, 200, publicCopy(usuarioLogado), null, usuarioToJson(usuarioLogado));
         res.addHeader("Authorization", "Bearer " + tokenJwt);
         notifyListeners(res);
         return res;
@@ -316,12 +322,39 @@ public class MockApiService implements ApiService {
     public ApiResponse<Usuario> updateMe(String nome, String telefone, String curso, String fotoUrl) {
         String method = "PUT";
         String path = "/usuarios/me";
-        String reqJson = String.format("{\n  \"nome_completo\": \"%s\",\n  \"telefone\": \"%s\",\n  \"curso\": \"%s\",\n  \"foto_url\": %s\n}",
-                nome != null ? nome : "", telefone != null ? telefone : "", curso != null ? curso : "", fotoUrl != null ? "\"" + fotoUrl + "\"" : "null");
+        String reqJson = "{\n"
+                + "  \"nome_completo\": " + jsonString(nome) + ",\n"
+                + "  \"telefone\": " + jsonString(telefone) + ",\n"
+                + "  \"curso\": " + jsonString(curso) + ",\n"
+                + "  \"foto_url\": " + jsonString(fotoUrl) + "\n"
+                + "}";
 
         if (!isAuthenticated()) {
             ApiError err = new ApiError(401, "Unauthorized", "Token de autenticação inválido ou expirado.");
             ApiResponse<Usuario> res = ApiResponse.fail(method, path, err, reqJson);
+            notifyListeners(res);
+            return res;
+        }
+
+        List<String> validacaoErros = new ArrayList<>();
+        if (nome != null && !nome.trim().isEmpty()
+                && (nome.trim().length() < 3 || nome.trim().length() > 150)) {
+            validacaoErros.add("nome_completo deve ter entre 3 e 150 caracteres");
+        }
+        if (telefone != null && !telefone.trim().isEmpty()
+                && !telefone.replaceAll("[^0-9]", "").matches("\\d{10,11}")) {
+            validacaoErros.add("telefone deve ser uma string numérica com DDD (10 ou 11 dígitos)");
+        }
+        if (curso != null && curso.trim().length() > 100) {
+            validacaoErros.add("curso deve ter no máximo 100 caracteres");
+        }
+        if (fotoUrl != null && fotoUrl.trim().length() > 255) {
+            validacaoErros.add("foto_url deve ter no máximo 255 caracteres");
+        }
+        if (!validacaoErros.isEmpty()) {
+            ApiError err = new ApiError(400, "Bad Request", validacaoErros);
+            ApiResponse<Usuario> res = ApiResponse.fail(method, path, err, reqJson);
+            res.addHeader("Authorization", "Bearer " + tokenJwt);
             notifyListeners(res);
             return res;
         }
@@ -346,7 +379,7 @@ public class MockApiService implements ApiService {
         }
 
         String respJson = "{\n  \"mensagem\": \"Perfil atualizado com sucesso.\",\n  \"usuario\": " + usuarioToJson(usuarioLogado) + "\n}";
-        ApiResponse<Usuario> res = ApiResponse.ok(method, path, 200, usuarioLogado.clone(), reqJson, respJson);
+        ApiResponse<Usuario> res = ApiResponse.ok(method, path, 200, publicCopy(usuarioLogado), reqJson, respJson);
         res.addHeader("Authorization", "Bearer " + tokenJwt);
         notifyListeners(res);
         return res;
@@ -404,7 +437,10 @@ public class MockApiService implements ApiService {
             paginados = filtrados.subList(fromIndex, toIndex);
         }
 
-        PageResult<Usuario> pageResult = new PageResult<>(total, pagina, limite, paginados);
+        List<Usuario> paginadosSeguros = paginados.stream()
+                .map(this::publicCopy)
+                .collect(Collectors.toList());
+        PageResult<Usuario> pageResult = new PageResult<>(total, pagina, limite, paginadosSeguros);
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
@@ -412,9 +448,9 @@ public class MockApiService implements ApiService {
         sb.append("  \"pagina\": ").append(pagina).append(",\n");
         sb.append("  \"limite\": ").append(limite).append(",\n");
         sb.append("  \"usuarios\": [\n");
-        for (int i = 0; i < paginados.size(); i++) {
-            sb.append("    ").append(usuarioToJson(paginados.get(i)).replace("\n", "\n    "));
-            if (i < paginados.size() - 1) sb.append(",");
+        for (int i = 0; i < paginadosSeguros.size(); i++) {
+            sb.append("    ").append(usuarioToJson(paginadosSeguros.get(i)).replace("\n", "\n    "));
+            if (i < paginadosSeguros.size() - 1) sb.append(",");
             sb.append("\n");
         }
         sb.append("  ]\n}");
@@ -429,8 +465,13 @@ public class MockApiService implements ApiService {
     public ApiResponse<Usuario> updateUsuarioAdmin(String id, String nome, String email, String nivel, String telefone, String curso) {
         String method = "PUT";
         String path = "/admin/usuarios/" + id;
-        String reqJson = String.format("{\n  \"nome_completo\": \"%s\",\n  \"email\": \"%s\",\n  \"nivel\": \"%s\",\n  \"telefone\": \"%s\",\n  \"curso\": \"%s\"\n}",
-                nome != null ? nome : "", email != null ? email : "", nivel != null ? nivel : "", telefone != null ? telefone : "", curso != null ? curso : "");
+        String reqJson = "{\n"
+                + "  \"nome_completo\": " + jsonString(nome) + ",\n"
+                + "  \"email\": " + jsonString(email) + ",\n"
+                + "  \"nivel\": " + jsonString(nivel) + ",\n"
+                + "  \"telefone\": " + jsonString(telefone) + ",\n"
+                + "  \"curso\": " + jsonString(curso) + "\n"
+                + "}";
 
         if (!isAuthenticated()) {
             ApiError err = new ApiError(401, "Unauthorized", "Token de autenticação inválido ou expirado.");
@@ -463,9 +504,41 @@ public class MockApiService implements ApiService {
             return res;
         }
 
+        List<String> validacaoErros = new ArrayList<>();
+        if (nome == null || nome.trim().length() < 3 || nome.trim().length() > 150) {
+            validacaoErros.add("nome_completo deve ter entre 3 e 150 caracteres");
+        }
+        if (email == null || !EMAIL_PATTERN.matcher(email.trim()).matches() || email.trim().length() > 150) {
+            validacaoErros.add("email deve ser um e-mail válido");
+        }
+        if (nivel == null || !("ALUNO".equalsIgnoreCase(nivel.trim()) || "ADMIN".equalsIgnoreCase(nivel.trim()))) {
+            validacaoErros.add("nivel deve ser ALUNO ou ADMIN");
+        }
+        if (telefone != null && !telefone.trim().isEmpty()
+                && !telefone.replaceAll("[^0-9]", "").matches("\\d{10,11}")) {
+            validacaoErros.add("telefone deve ser uma string numérica com DDD (10 ou 11 dígitos)");
+        }
+        if (curso != null && curso.trim().length() > 100) {
+            validacaoErros.add("curso deve ter no máximo 100 caracteres");
+        }
+        for (Usuario usuario : usuarios) {
+            if (!usuario.getId().equals(target.getId())
+                    && usuario.getEmail().equalsIgnoreCase(email == null ? "" : email.trim())) {
+                validacaoErros.add("Este e-mail já está em uso por outro usuário.");
+                break;
+            }
+        }
+        if (!validacaoErros.isEmpty()) {
+            ApiError err = new ApiError(400, "Bad Request", validacaoErros);
+            ApiResponse<Usuario> res = ApiResponse.fail(method, path, err, reqJson);
+            res.addHeader("Authorization", "Bearer " + tokenJwt);
+            notifyListeners(res);
+            return res;
+        }
+
         if (nome != null && !nome.trim().isEmpty()) target.setNome_completo(nome.trim());
-        if (email != null && !email.trim().isEmpty()) target.setEmail(email.trim());
-        if (nivel != null && !nivel.trim().isEmpty()) target.setNivel(nivel.trim().toUpperCase());
+        target.setEmail(email.trim());
+        target.setNivel(nivel.trim().toUpperCase());
         if (telefone != null && !telefone.trim().isEmpty()) target.setTelefone(telefone.replaceAll("[^0-9]", ""));
         if (curso != null && !curso.trim().isEmpty()) target.setCurso(curso.trim());
 
@@ -475,7 +548,7 @@ public class MockApiService implements ApiService {
         }
 
         String respJson = "{\n  \"mensagem\": \"Usuário atualizado pelo administrador com sucesso.\",\n  \"usuario\": " + usuarioToJson(target) + "\n}";
-        ApiResponse<Usuario> res = ApiResponse.ok(method, path, 200, target.clone(), reqJson, respJson);
+        ApiResponse<Usuario> res = ApiResponse.ok(method, path, 200, publicCopy(target), reqJson, respJson);
         res.addHeader("Authorization", "Bearer " + tokenJwt);
         notifyListeners(res);
         return res;
@@ -528,9 +601,43 @@ public class MockApiService implements ApiService {
 
     private String usuarioToJson(Usuario u) {
         if (u == null) return "null";
-        return String.format("{\n  \"id\": \"%s\",\n  \"instituicao_id\": \"%s\",\n  \"instituicao_nome\": \"%s\",\n  \"nome_completo\": \"%s\",\n  \"email\": \"%s\",\n  \"nivel\": \"%s\",\n  \"telefone\": \"%s\",\n  \"curso\": \"%s\",\n  \"foto_url\": %s,\n  \"media_avaliacao\": \"%s\",\n  \"criado_em\": \"%s\"\n}",
-                u.getId(), u.getInstituicao_id(), u.getInstituicao_nome(), u.getNome_completo(), u.getEmail(), u.getNivel(), u.getTelefone(), u.getCurso(),
-                u.getFoto_url() != null ? "\"" + u.getFoto_url() + "\"" : "null", u.getMedia_avaliacao(), u.getCriado_em());
+        return "{\n"
+                + "  \"id\": " + jsonString(u.getId()) + ",\n"
+                + "  \"instituicao_id\": " + jsonString(u.getInstituicao_id()) + ",\n"
+                + "  \"instituicao_nome\": " + jsonString(u.getInstituicao_nome()) + ",\n"
+                + "  \"nome_completo\": " + jsonString(u.getNome_completo()) + ",\n"
+                + "  \"email\": " + jsonString(u.getEmail()) + ",\n"
+                + "  \"nivel\": " + jsonString(u.getNivel()) + ",\n"
+                + "  \"telefone\": " + jsonString(u.getTelefone()) + ",\n"
+                + "  \"curso\": " + jsonString(u.getCurso()) + ",\n"
+                + "  \"foto_url\": " + jsonString(u.getFoto_url()) + ",\n"
+                + "  \"media_avaliacao\": " + jsonString(u.getMedia_avaliacao()) + ",\n"
+                + "  \"criado_em\": " + jsonString(u.getCriado_em()) + "\n"
+                + "}";
+    }
+
+    private Usuario publicCopy(Usuario usuario) {
+        Usuario copy = usuario == null ? null : usuario.clone();
+        if (copy != null) copy.setSenhaHash(null);
+        return copy;
+    }
+
+    private String authToJson(String token, Usuario usuario) {
+        return "{\n  \"token\": " + jsonString(token)
+                + ",\n  \"usuario\": " + usuarioToJson(usuario) + "\n}";
+    }
+
+    private String jsonString(String value) {
+        if (value == null) return "null";
+        return "\"" + escapeJson(value) + "\"";
+    }
+
+    private String escapeJson(String value) {
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n")
+                .replace("\t", "\\t");
     }
 
     @Override
@@ -541,28 +648,43 @@ public class MockApiService implements ApiService {
 
     @Override
     public void setUsuarioLogado(Usuario usuario, String token) {
-        this.usuarioLogado = usuario;
+        if (usuario == null || token == null || !isTokenForUser(token, usuario)) {
+            logout();
+            return;
+        }
+        this.usuarioLogado = usuario.clone();
         this.tokenJwt = token;
     }
 
     @Override
     public Usuario getUsuarioLogado() {
-        return usuarioLogado;
+        return isAuthenticated() ? publicCopy(usuarioLogado) : null;
     }
 
     @Override
     public String getToken() {
-        return tokenJwt;
+        return isAuthenticated() ? tokenJwt : null;
     }
 
     @Override
     public boolean isAuthenticated() {
-        return usuarioLogado != null && tokenJwt != null;
+        if (usuarioLogado == null || tokenJwt == null) return false;
+        if (!isTokenForUser(tokenJwt, usuarioLogado)) {
+            logout();
+            return false;
+        }
+        return usuarios.stream().anyMatch(u -> u.getId().equals(usuarioLogado.getId()));
     }
 
     @Override
     public boolean isAdmin() {
         return isAuthenticated() && usuarioLogado.isAdmin();
+    }
+
+    private boolean isTokenForUser(String token, Usuario usuario) {
+        return jwtService.validate(token)
+                .map(claims -> claims.getSubject().equals(usuario.getId()))
+                .orElse(false);
     }
 
     @Override

@@ -89,7 +89,7 @@ public class CadastroView extends JPanel {
         validationRules.setOpaque(false);
         validationRules.add(createRuleItem("• Nome: mín. 3 caracteres"));
         validationRules.add(createRuleItem("• E-mail institucional único"));
-        validationRules.add(createRuleItem("• Senha: mín. 6 caracteres (bcrypt)"));
+        validationRules.add(createRuleItem("• Senha: mín. 6 caracteres (hash com salt)"));
         validationRules.add(createRuleItem("• Telefone numérico com DDD"));
         validationRules.add(createRuleItem("• Instituição de ensino vinculada"));
 

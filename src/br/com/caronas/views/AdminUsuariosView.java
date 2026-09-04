@@ -37,6 +37,7 @@ public class AdminUsuariosView extends JPanel {
     private JPanel forbiddenPanel;
     private JPanel mainAdminPanel;
     private CardLayout cardLayout;
+    private JLabel lblAccessDescription;
 
     public AdminUsuariosView(ApiService apiService, Runnable onRoleSwitchRequested) {
         this.apiService = apiService;
@@ -212,11 +213,11 @@ public class AdminUsuariosView extends JPanel {
         lblSub.setForeground(AppTheme.getTextPrimary());
         lblSub.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblDesc = new JLabel("<html><center>Você está atualmente autenticado com o perfil <b>ALUNO</b>.<br>De acordo com o controle de acesso RBAC da especificação técnica, apenas usuários com perfil <b>ADMIN</b> têm permissão para acessar a rota <code>/admin/usuarios</code>.</center></html>", SwingConstants.CENTER);
-        lblDesc.setFont(AppTheme.FONT_BODY);
-        lblDesc.setForeground(AppTheme.getTextSecondary());
-        lblDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblDesc.setBorder(new EmptyBorder(16, 10, 20, 10));
+        lblAccessDescription = new JLabel("", SwingConstants.CENTER);
+        lblAccessDescription.setFont(AppTheme.FONT_BODY);
+        lblAccessDescription.setForeground(AppTheme.getTextSecondary());
+        lblAccessDescription.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblAccessDescription.setBorder(new EmptyBorder(16, 10, 20, 10));
 
         RoundedButton btnSwitchAdmin = new RoundedButton("👑 Entrar como Administrador (Ana)", RoundedButton.ButtonStyle.ACCENT);
         btnSwitchAdmin.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -229,7 +230,7 @@ public class AdminUsuariosView extends JPanel {
         content.add(lblLock);
         content.add(Box.createVerticalStrut(10));
         content.add(lblSub);
-        content.add(lblDesc);
+        content.add(lblAccessDescription);
         content.add(btnSwitchAdmin);
 
         card.add(content, BorderLayout.CENTER);
@@ -241,6 +242,11 @@ public class AdminUsuariosView extends JPanel {
             cardLayout.show(this, "ADMIN");
             loadData();
         } else {
+            Usuario usuario = apiService.getUsuarioLogado();
+            String perfil = usuario == null ? "não autenticado" : usuario.getNivel();
+            lblAccessDescription.setText("<html><center>Seu estado atual é <b>" + perfil + "</b>.<br>"
+                    + "De acordo com o controle de acesso RBAC, apenas usuários com perfil <b>ADMIN</b> "
+                    + "têm permissão para acessar a rota <code>/admin/usuarios</code>.</center></html>");
             cardLayout.show(this, "FORBIDDEN");
             // Dispara chamada para gerar evento 403 no log
             apiService.getUsuariosAdmin("", "TODOS", 1, 10);

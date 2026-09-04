@@ -160,7 +160,7 @@ public class Feature1Test {
             ApiResponse<Usuario> res = api.updateUsuarioAdmin(
                     "u1u2u3u4-0000-0000-0000-000000000000",
                     "Carlos Eduardo Promovido",
-                    "carlos.admin@faculdade.br",
+                    "carlos.promovido@faculdade.br",
                     "ADMIN",
                     "62999998888",
                     "Docente / Coordenação"

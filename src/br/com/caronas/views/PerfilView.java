@@ -256,6 +256,23 @@ public class PerfilView extends JPanel {
         Usuario u = apiService.getUsuarioLogado();
         if (u == null) {
             lblNomeHeader.setText("Não Autenticado");
+            lblEmailHeader.setText("Faça login para consultar o perfil");
+            avatarPanel.setUser("V", null);
+            badgeRole.setVisible(false);
+            lblRating.setText("⭐ -- / 5.00");
+            lblInstituicao.setText("🏛️ --");
+            lblCriadoEm.setText("📅 --");
+            txtNome.setText("");
+            txtTelefone.setText("");
+            txtCurso.setText("");
+            txtFotoUrl.setText("");
+            txtEmailReadOnly.setText("");
+            txtNivelReadOnly.setText("");
+            txtRatingReadOnly.setText("");
+            txtIdReadOnly.setText("");
+            lblStatus.setText("Faça login para editar seu perfil.");
+            lblStatus.setForeground(AppTheme.getTextSecondary());
+            repaint();
             return;
         }
 
@@ -264,6 +281,7 @@ public class PerfilView extends JPanel {
         lblEmailHeader.setText(u.getEmail());
         avatarPanel.setUser(u.getNome_completo(), u.getFoto_url());
         badgeRole.setText("ADMIN".equalsIgnoreCase(u.getNivel()) ? "👑 ADMIN" : "🎓 ALUNO");
+        badgeRole.setVisible(true);
         badgeRole.setBadgeColors("ADMIN".equalsIgnoreCase(u.getNivel()) ? ModernColors.BADGE_ADMIN_BG : ModernColors.BADGE_ALUNO_BG, Color.WHITE);
         lblRating.setText("⭐ " + (u.getMedia_avaliacao() != null ? u.getMedia_avaliacao() : "0.00") + " / 5.00");
         lblInstituicao.setText("🏛️ " + (u.getInstituicao_nome() != null ? u.getInstituicao_nome() : "Instituição de Ensino"));

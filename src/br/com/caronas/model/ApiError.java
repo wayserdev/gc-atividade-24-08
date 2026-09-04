@@ -43,7 +43,7 @@ public class ApiError {
     public String toJson() {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
-        sb.append("  \"erro\": \"").append(erro).append("\",\n");
+        sb.append("  \"erro\": \"").append(escapeJson(erro)).append("\",\n");
         if (mensagens.size() == 1) {
             sb.append("  \"mensagem\": \"").append(escapeJson(mensagens.get(0))).append("\"\n");
         } else {
@@ -61,6 +61,10 @@ public class ApiError {
 
     private String escapeJson(String s) {
         if (s == null) return "";
-        return s.replace("\"", "\\\"").replace("\n", "\\n");
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n")
+                .replace("\t", "\\t");
     }
 }

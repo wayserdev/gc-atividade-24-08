@@ -170,7 +170,7 @@ public class MainFrame extends JFrame {
         userPill.add(headerBadgeRole);
 
         // Quick role toggle button
-        btnHeaderQuickSwitch = new RoundedButton("🔄 Alternar Perfil", RoundedButton.ButtonStyle.GHOST);
+        btnHeaderQuickSwitch = new RoundedButton("🔄 Alternar Perfil (demo)", RoundedButton.ButtonStyle.GHOST);
         btnHeaderQuickSwitch.setFont(AppTheme.FONT_SMALL_BOLD);
         btnHeaderQuickSwitch.addActionListener(e -> switchDemoRole());
 
@@ -222,7 +222,7 @@ public class MainFrame extends JFrame {
         specInfo.setLayout(new BorderLayout());
         specInfo.setBorder(new EmptyBorder(10, 12, 10, 12));
 
-        JLabel lblSpec = new JLabel("<html><b>Dev 01</b> • FT01, FT02, FT03<br><font color='#818cf8'>JWT • Bcrypt • RBAC</font></html>");
+        JLabel lblSpec = new JLabel("<html><b>Dev 01</b> • FT01, FT02, FT03<br><font color='#818cf8'>JWT • Hash seguro • RBAC</font></html>");
         lblSpec.setFont(AppTheme.FONT_SMALL);
         specInfo.add(lblSpec, BorderLayout.CENTER);
 
@@ -268,7 +268,7 @@ public class MainFrame extends JFrame {
     }
 
     private void updateHeaderUserInfo() {
-        Usuario u = apiService.getUsuarioLogado();
+        Usuario u = apiService.isAuthenticated() ? apiService.getUsuarioLogado() : null;
         if (u != null) {
             lblHeaderNome.setText(u.getNome_completo());
             lblHeaderEmail.setText(u.getEmail());

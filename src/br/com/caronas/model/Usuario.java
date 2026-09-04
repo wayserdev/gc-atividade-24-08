@@ -8,7 +8,11 @@ public class Usuario implements Serializable, Cloneable {
     private String instituicao_nome;
     private String nome_completo;
     private String email;
-    private String senha;
+    /**
+     * Senha armazenada somente como hash. Nunca mantenha a senha em texto
+     * puro no modelo de usuário.
+     */
+    private String senhaHash;
     private String nivel; // "ALUNO" ou "ADMIN"
     private String telefone;
     private String curso;
@@ -22,14 +26,14 @@ public class Usuario implements Serializable, Cloneable {
     }
 
     public Usuario(String id, String instituicao_id, String instituicao_nome, String nome_completo,
-                   String email, String senha, String nivel, String telefone, String curso,
+                   String email, String senhaHash, String nivel, String telefone, String curso,
                    String foto_url, String media_avaliacao, String criado_em) {
         this.id = id;
         this.instituicao_id = instituicao_id;
         this.instituicao_nome = instituicao_nome;
         this.nome_completo = nome_completo;
         this.email = email;
-        this.senha = senha;
+        this.senhaHash = senhaHash;
         this.nivel = nivel != null ? nivel : "ALUNO";
         this.telefone = telefone;
         this.curso = curso;
@@ -87,12 +91,26 @@ public class Usuario implements Serializable, Cloneable {
         this.email = email;
     }
 
+    /**
+     * Compatibilidade com o contrato antigo do projeto. O retorno é o hash,
+     * nunca a senha original.
+     */
+    @Deprecated
     public String getSenha() {
-        return senha;
+        return senhaHash;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    @Deprecated
+    public void setSenha(String senhaHash) {
+        this.senhaHash = senhaHash;
+    }
+
+    public String getSenhaHash() {
+        return senhaHash;
+    }
+
+    public void setSenhaHash(String senhaHash) {
+        this.senhaHash = senhaHash;
     }
 
     public String getNivel() {
@@ -154,7 +172,7 @@ public class Usuario implements Serializable, Cloneable {
             u.instituicao_nome = this.instituicao_nome;
             u.nome_completo = this.nome_completo;
             u.email = this.email;
-            u.senha = this.senha;
+            u.senhaHash = this.senhaHash;
             u.nivel = this.nivel;
             u.telefone = this.telefone;
             u.curso = this.curso;
