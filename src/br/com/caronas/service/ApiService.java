@@ -42,4 +42,24 @@ public interface ApiService {
     void addApiCallListener(ApiCallListener listener);
 
     void removeApiCallListener(ApiCallListener listener);
+
+    // ==========================================
+    // DEV04 — RESERVAS (FT10-11 / UC06-08)
+    // ==========================================
+    ApiResponse<ReservaResponse> criarReserva(ReservaRequest request);
+
+    ApiResponse<ReservaResponse> getReservaById(String id);
+
+    ApiResponse<List<ReservaResponse>> getReservas();
+
+    ApiResponse<List<ReservaResponse>> getReservasByUsuario(String usuarioId);
+
+    ApiResponse<ReservaResponse> cancelarReserva(String id);
+
+    ApiResponse<ReservaResponse> updateStatusReserva(String id, String novoStatus);
+
+    // Integração mínima com Caronas (DEV03)
+    List<Carona> getCaronas();
+
+    Carona getCaronaById(String id);
 }

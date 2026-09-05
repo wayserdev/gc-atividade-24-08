@@ -16,4 +16,16 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 java -ea "-Dfile.encoding=UTF-8" -cp "bin;lib/*" br.com.caronas.test.AuthSecurityTest
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha nos testes de Segurança.
+    pause
+    exit /b %errorlevel%
+)
+echo [3/3] Executando Suíte de Testes Automatizados - Reservas (DEV04)...
+java -ea "-Dfile.encoding=UTF-8" -cp "bin;lib/*" br.com.caronas.test.ReservaTest
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha nos testes de Reservas.
+    pause
+    exit /b %errorlevel%
+)
 pause
