@@ -33,8 +33,20 @@ Para clonar, compilar e executar o projeto, são necessárias as seguintes ferra
 | Ferramenta | Versão Recomendada / Mínima | Finalidade |
 |---|---|---|
 | **Git** | 2.30+ | Controle de versão e obtenção do repositório |
-| **Java JDK** | 17 LTS ou 21 LTS (Oracle JDK ou OpenJDK) | Compilação e execução da aplicação Java |
+| **Java JDK** | 17 LTS ou 21 LTS (Oracle JDK ou OpenJDK) — também testado com JDK 22 | Compilação e execução da aplicação Java |
 | **PostgreSQL** (Opcional) | 14+ | Execução dos scripts DDL/DML de banco de dados |
+
+### Como Verificar o Ambiente
+
+Antes de compilar, confira as versões instaladas:
+
+```bash
+git --version
+java -version
+javac -version
+```
+
+As versões de `java` e `javac` devem ser iguais. Se o `javac` não for encontrado, instale o **JDK** (não apenas o JRE) e adicione a pasta `bin` do JDK ao `PATH`.
 
 ---
 
