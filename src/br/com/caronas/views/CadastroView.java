@@ -25,6 +25,7 @@ public class CadastroView extends JPanel {
     private ModernTextField txtCurso;
     private JComboBox<Instituicao> cbInstituicao;
     private JLabel lblStatus;
+    private RoundedButton btnCadastrar;
 
     public CadastroView(ApiService apiService, Runnable onCadastroSuccess, Runnable onNavigateToLogin) {
         this.apiService = apiService;
@@ -40,86 +41,81 @@ public class CadastroView extends JPanel {
 
         RoundedPanel card = new RoundedPanel(20);
         card.setLayout(new BorderLayout());
-        card.setPreferredSize(new Dimension(860, 560));
+        card.setPreferredSize(new Dimension(920, 620));
 
-        // LEFT: Info Banner
+        // LEFT PANEL: Brand Info
         JPanel heroPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 GradientPaint gp = new GradientPaint(
-                        0, 0, ModernColors.PRIMARY_HOVER,
-                        getWidth(), getHeight(), ModernColors.ACCENT_CYAN
+                        0, 0, ModernColors.ACCENT_PURPLE,
+                        getWidth(), getHeight(), ModernColors.PRIMARY
                 );
                 g2.setPaint(gp);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 g2.fillRect(getWidth() - 20, 0, 20, getHeight());
-
-                g2.setColor(new Color(255, 255, 255, 20));
-                g2.fillOval(-50, getHeight() - 150, 220, 220);
-                g2.fillOval(getWidth() - 80, -40, 160, 160);
-
                 g2.dispose();
                 super.paintComponent(g);
             }
         };
         heroPanel.setOpaque(false);
-        heroPanel.setPreferredSize(new Dimension(340, 560));
+        heroPanel.setPreferredSize(new Dimension(360, 620));
         heroPanel.setLayout(new BorderLayout());
-        heroPanel.setBorder(new EmptyBorder(40, 32, 40, 32));
+        heroPanel.setBorder(new EmptyBorder(36, 32, 36, 32));
 
         JPanel heroContent = new JPanel();
         heroContent.setLayout(new BoxLayout(heroContent, BoxLayout.Y_AXIS));
         heroContent.setOpaque(false);
 
-        JLabel lblIcon = new JLabel("🎓✨");
-        lblIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 42));
+        JLabel lblTag = new JLabel("UniRide");
+        lblTag.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        lblTag.setForeground(Color.WHITE);
 
-        JLabel lblTitle = new JLabel("<html>Novo Aluno<br>Cadastre-se</html>");
+        JLabel lblTitle = new JLabel("<html>Crie sua Conta<br>Universitaria</html>");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
-        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setForeground(new Color(230, 240, 255));
 
-        JLabel lblDesc = new JLabel("<html>Crie sua conta para participar do sistema de caronas. Ao se cadastrar, seu perfil padrão é <b>ALUNO</b> e um token JWT é emitido automaticamente (HTTP 201 Created).</html>");
+        JLabel lblDesc = new JLabel("<html>Junte-se a rede de mobilidade da sua faculdade. Compartilhe trajetos com estudantes verificados.</html>");
         lblDesc.setFont(AppTheme.FONT_BODY);
-        lblDesc.setForeground(new Color(235, 245, 255));
+        lblDesc.setForeground(new Color(240, 240, 255));
         lblDesc.setBorder(new EmptyBorder(14, 0, 14, 0));
 
-        JPanel validationRules = new JPanel(new GridLayout(5, 1, 0, 8));
-        validationRules.setOpaque(false);
-        validationRules.add(createRuleItem("• Nome: mín. 3 caracteres"));
-        validationRules.add(createRuleItem("• E-mail institucional único"));
-        validationRules.add(createRuleItem("• Senha: mín. 6 caracteres (bcrypt)"));
-        validationRules.add(createRuleItem("• Telefone numérico com DDD"));
-        validationRules.add(createRuleItem("• Instituição de ensino vinculada"));
+        JPanel featureList = new JPanel(new GridLayout(4, 1, 0, 8));
+        featureList.setOpaque(false);
+        featureList.add(createFeatureItem("[*] Validacao de e-mail academico"));
+        featureList.add(createFeatureItem("[*] Integracao com sua faculdade"));
+        featureList.add(createFeatureItem("[*] Perfil ALUNO configurado"));
+        featureList.add(createFeatureItem("[*] Token JWT emitido"));
 
-        heroContent.add(lblIcon);
-        heroContent.add(Box.createVerticalStrut(12));
+        heroContent.add(lblTag);
+        heroContent.add(Box.createVerticalStrut(4));
         heroContent.add(lblTitle);
-        heroContent.add(Box.createVerticalStrut(8));
+        heroContent.add(Box.createVerticalStrut(6));
         heroContent.add(lblDesc);
-        heroContent.add(Box.createVerticalStrut(10));
-        heroContent.add(validationRules);
+        heroContent.add(Box.createVerticalStrut(8));
+        heroContent.add(featureList);
 
         heroPanel.add(heroContent, BorderLayout.CENTER);
 
-        // RIGHT: Form
+        // RIGHT PANEL: Registration Form
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setOpaque(false);
-        formPanel.setBorder(new EmptyBorder(28, 36, 28, 36));
+        formPanel.setBorder(new EmptyBorder(26, 34, 26, 34));
 
-        JLabel lblFormTitle = new JLabel("Cadastro de Estudante");
+        JLabel lblFormTitle = new JLabel("Novo Cadastro de Aluno");
         lblFormTitle.setFont(AppTheme.FONT_TITLE);
         lblFormTitle.setForeground(AppTheme.getTextPrimary());
 
-        JLabel lblFormSub = new JLabel("Preencha os campos obrigatórios da especificação (DTO)");
-        lblFormSub.setFont(AppTheme.FONT_SMALL);
+        JLabel lblFormSub = new JLabel("Preencha seus dados para ingressar na plataforma");
+        lblFormSub.setFont(AppTheme.FONT_BODY);
         lblFormSub.setForeground(AppTheme.getTextSecondary());
 
         // Fields
         txtNome = new ModernTextField("Carlos Eduardo");
-        txtEmail = new ModernTextField("carlos.edu@gmail.com");
+        txtEmail = new ModernTextField("carlos.novo@aluno.ueg.br");
         txtSenha = new ModernPasswordField("senhaSegura123");
         txtTelefone = new ModernTextField("62999998888");
         txtCurso = new ModernTextField("Engenharia de Software");
@@ -128,61 +124,53 @@ public class CadastroView extends JPanel {
         cbInstituicao = new JComboBox<>(instList.toArray(new Instituicao[0]));
         cbInstituicao.setFont(AppTheme.FONT_BODY);
 
-        // Grid 2 cols for compact beautiful look
-        JPanel fieldsGrid = new JPanel(new GridLayout(3, 2, 14, 10));
-        fieldsGrid.setOpaque(false);
-
-        fieldsGrid.add(createLabeledField("NOME COMPLETO *", txtNome));
-        fieldsGrid.add(createLabeledField("E-MAIL *", txtEmail));
-        fieldsGrid.add(createLabeledField("SENHA (MÍN. 6 DÍGITOS) *", txtSenha));
-        fieldsGrid.add(createLabeledField("TELEFONE COM DDD *", txtTelefone));
-        fieldsGrid.add(createLabeledField("CURSO *", txtCurso));
-        fieldsGrid.add(createLabeledField("INSTITUIÇÃO *", cbInstituicao));
-
-        RoundedButton btnCadastrar = new RoundedButton("Finalizar Cadastro (POST /auth/cadastrar)", RoundedButton.ButtonStyle.SUCCESS);
-        btnCadastrar.setPreferredSize(new Dimension(0, 42));
-        btnCadastrar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+        btnCadastrar = new RoundedButton("Finalizar Cadastro (POST /auth)", RoundedButton.ButtonStyle.PRIMARY);
+        btnCadastrar.setPreferredSize(new Dimension(0, 40));
+        btnCadastrar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         btnCadastrar.addActionListener(e -> executeCadastro());
-
-        // Fill Sample Data Button
-        RoundedButton btnFillSample = new RoundedButton("⚡ Preencher Dados Exemplo", RoundedButton.ButtonStyle.GHOST);
-        btnFillSample.setFont(AppTheme.FONT_SMALL);
-        btnFillSample.addActionListener(e -> {
-            txtNome.setText("Carlos Eduardo " + (int)(Math.random() * 900 + 100));
-            txtEmail.setText("carlos." + (int)(Math.random() * 900 + 100) + "@gmail.com");
-            txtSenha.setText("senhaSegura123");
-            txtTelefone.setText("62999998888");
-            txtCurso.setText("Engenharia de Software");
-        });
 
         lblStatus = new JLabel(" ", SwingConstants.CENTER);
         lblStatus.setFont(AppTheme.FONT_SMALL_BOLD);
         lblStatus.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Footer Link
         JPanel footerLink = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
         footerLink.setOpaque(false);
-        JLabel lblAlready = new JLabel("Já possui uma conta cadastrada?");
-        lblAlready.setFont(AppTheme.FONT_BODY);
-        lblAlready.setForeground(AppTheme.getTextSecondary());
+        JLabel lblHaveAccount = new JLabel("Ja possui uma conta?");
+        lblHaveAccount.setFont(AppTheme.FONT_BODY);
+        lblHaveAccount.setForeground(AppTheme.getTextSecondary());
 
         RoundedButton btnLogin = new RoundedButton("Fazer Login", RoundedButton.ButtonStyle.GHOST);
         btnLogin.setFont(AppTheme.FONT_BODY_BOLD);
         btnLogin.setForeground(ModernColors.PRIMARY);
         btnLogin.addActionListener(e -> onNavigateToLogin.run());
 
-        footerLink.add(lblAlready);
+        footerLink.add(lblHaveAccount);
         footerLink.add(btnLogin);
 
+        // Assemble Form
         formPanel.add(lblFormTitle);
         formPanel.add(Box.createVerticalStrut(2));
         formPanel.add(lblFormSub);
-        formPanel.add(Box.createVerticalStrut(16));
-        formPanel.add(fieldsGrid);
-        formPanel.add(Box.createVerticalStrut(14));
-        formPanel.add(btnCadastrar);
+        formPanel.add(Box.createVerticalStrut(12));
+
+        formPanel.add(createFieldRow("NOME COMPLETO:", txtNome));
         formPanel.add(Box.createVerticalStrut(6));
-        formPanel.add(btnFillSample);
+        formPanel.add(createFieldRow("E-MAIL ACADEMICO:", txtEmail));
+        formPanel.add(Box.createVerticalStrut(6));
+        formPanel.add(createFieldRow("SENHA (MINIMO 6 CARACTERES):", txtSenha));
+        formPanel.add(Box.createVerticalStrut(6));
+
+        JPanel splitRow = new JPanel(new GridLayout(1, 2, 10, 0));
+        splitRow.setOpaque(false);
+        splitRow.add(createFieldGroup("TELEFONE COM DDD:", txtTelefone));
+        splitRow.add(createFieldGroup("CURSO:", txtCurso));
+        formPanel.add(splitRow);
+        formPanel.add(Box.createVerticalStrut(6));
+
+        formPanel.add(createFieldGroup("INSTITUICAO DE ENSINO:", cbInstituicao));
+        formPanel.add(Box.createVerticalStrut(12));
+
+        formPanel.add(btnCadastrar);
         formPanel.add(Box.createVerticalStrut(6));
         formPanel.add(lblStatus);
         formPanel.add(Box.createVerticalGlue());
@@ -194,7 +182,7 @@ public class CadastroView extends JPanel {
         add(card);
     }
 
-    private JPanel createRuleItem(String text) {
+    private JPanel createFeatureItem(String text) {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         p.setOpaque(false);
         JLabel l = new JLabel(text);
@@ -204,16 +192,25 @@ public class CadastroView extends JPanel {
         return p;
     }
 
-    private JPanel createLabeledField(String label, JComponent field) {
-        JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    private JPanel createFieldRow(String label, JComponent comp) {
+        JPanel p = new JPanel(new BorderLayout(0, 2));
         p.setOpaque(false);
         JLabel l = new JLabel(label);
         l.setFont(AppTheme.FONT_SMALL_BOLD);
         l.setForeground(AppTheme.getTextSecondary());
-        p.add(l);
-        p.add(Box.createVerticalStrut(4));
-        p.add(field);
+        p.add(l, BorderLayout.NORTH);
+        p.add(comp, BorderLayout.CENTER);
+        return p;
+    }
+
+    private JPanel createFieldGroup(String label, JComponent comp) {
+        JPanel p = new JPanel(new BorderLayout(0, 2));
+        p.setOpaque(false);
+        JLabel l = new JLabel(label);
+        l.setFont(AppTheme.FONT_SMALL_BOLD);
+        l.setForeground(AppTheme.getTextSecondary());
+        p.add(l, BorderLayout.NORTH);
+        p.add(comp, BorderLayout.CENTER);
         return p;
     }
 
@@ -224,19 +221,18 @@ public class CadastroView extends JPanel {
         String telefone = txtTelefone.getText().trim();
         String curso = txtCurso.getText().trim();
         Instituicao inst = (Instituicao) cbInstituicao.getSelectedItem();
-        String instId = inst != null ? inst.getId() : null;
+        String instId = inst != null ? inst.getId() : "";
 
         ApiResponse<AuthResponse> resp = apiService.cadastrar(nome, email, senha, telefone, curso, instId);
         if (resp.isSuccess()) {
-            lblStatus.setText("Estudante cadastrado com sucesso! (201 Created)");
+            lblStatus.setText("Conta criada com sucesso!");
             lblStatus.setForeground(ModernColors.SUCCESS);
-            ToastNotification.show(this, "Cadastro Concluído (201 Created)", "Bem-vindo ao sistema, " + nome + "!", ToastNotification.ToastType.SUCCESS);
+            ToastNotification.show(this, "Cadastro Realizado!", "Bem-vindo a comunidade UniRide!", ToastNotification.ToastType.SUCCESS);
             onCadastroSuccess.run();
         } else {
-            lblStatus.setText("Erro: " + resp.getError().getMensagemFormatada());
+            lblStatus.setText(resp.getError().getMensagemFormatada());
             lblStatus.setForeground(ModernColors.DANGER);
-            ToastNotification.show(this, "Erro no Cadastro (" + resp.getStatusCode() + " " + resp.getError().getErro() + ")",
-                    resp.getError().getMensagemFormatada(), ToastNotification.ToastType.ERROR);
+            ToastNotification.show(this, "Erro no Cadastro", resp.getError().getMensagemFormatada(), ToastNotification.ToastType.ERROR);
         }
     }
 }

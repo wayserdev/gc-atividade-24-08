@@ -23,7 +23,6 @@ public class PerfilView extends JPanel {
     private JLabel lblRating;
     private JLabel lblInstituicao;
     private JLabel lblCriadoEm;
-    private JLabel lblUserId;
 
     // Form inputs
     private ModernTextField txtNome;
@@ -83,15 +82,15 @@ public class PerfilView extends JPanel {
         metaRow.setOpaque(false);
         metaRow.setBorder(new EmptyBorder(6, 0, 0, 0));
 
-        lblRating = new JLabel("⭐ 0.00 / 5.00");
+        lblRating = new JLabel("Nota: 0.00 / 5.00");
         lblRating.setFont(AppTheme.FONT_BODY_BOLD);
         lblRating.setForeground(ModernColors.GOLD);
 
-        lblInstituicao = new JLabel("🏛️ Universidade");
+        lblInstituicao = new JLabel("Instituicao: Universidade");
         lblInstituicao.setFont(AppTheme.FONT_BODY);
         lblInstituicao.setForeground(AppTheme.getTextSecondary());
 
-        lblCriadoEm = new JLabel("📅 Criado em: 2026-08-27");
+        lblCriadoEm = new JLabel("Membro desde: 2026-08-27");
         lblCriadoEm.setFont(AppTheme.FONT_SMALL);
         lblCriadoEm.setForeground(AppTheme.getTextMuted());
 
@@ -107,16 +106,15 @@ public class PerfilView extends JPanel {
         headerCard.add(avatarPanel, BorderLayout.WEST);
         headerCard.add(headerInfo, BorderLayout.CENTER);
 
-        // Action button on top right (Copy JWT Token)
         JPanel topActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 10));
         topActionPanel.setOpaque(false);
-        RoundedButton btnCopyToken = new RoundedButton("🔑 Copiar Token JWT", RoundedButton.ButtonStyle.GHOST);
+        RoundedButton btnCopyToken = new RoundedButton("Copiar Token JWT", RoundedButton.ButtonStyle.GHOST);
         btnCopyToken.setFont(AppTheme.FONT_SMALL_BOLD);
         btnCopyToken.addActionListener(e -> {
             String token = apiService.getToken();
             if (token != null) {
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(token), null);
-                ToastNotification.show(this, "Token Copiado!", "Bearer JWT copiado para a área de transferência.", ToastNotification.ToastType.INFO);
+                ToastNotification.show(this, "Token Copiado!", "Bearer JWT copiado para a area de transferencia.", ToastNotification.ToastType.INFO);
             }
         });
         topActionPanel.add(btnCopyToken);
@@ -131,11 +129,11 @@ public class PerfilView extends JPanel {
         editCard.setLayout(new BorderLayout(0, 14));
         editCard.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        JLabel lblEditTitle = new JLabel("✏️ Editar Perfil do Usuário");
+        JLabel lblEditTitle = new JLabel("Editar Perfil do Usuario");
         lblEditTitle.setFont(AppTheme.FONT_SUBTITLE);
         lblEditTitle.setForeground(AppTheme.getTextPrimary());
 
-        JLabel lblEditDesc = new JLabel("<html>Campos permitidos para atualização conforme rota <b>PUT /usuarios/me</b>:</html>");
+        JLabel lblEditDesc = new JLabel("<html>Campos permitidos para atualizacao na rota <b>PUT /usuarios/me</b>:</html>");
         lblEditDesc.setFont(AppTheme.FONT_SMALL);
         lblEditDesc.setForeground(AppTheme.getTextSecondary());
 
@@ -163,7 +161,7 @@ public class PerfilView extends JPanel {
         RoundedButton btnReset = new RoundedButton("Desfazer", RoundedButton.ButtonStyle.GHOST);
         btnReset.addActionListener(e -> refreshUserData());
 
-        RoundedButton btnSave = new RoundedButton("Salvar Alterações (PUT)", RoundedButton.ButtonStyle.PRIMARY);
+        RoundedButton btnSave = new RoundedButton("Salvar Alteracoes (PUT)", RoundedButton.ButtonStyle.PRIMARY);
         btnSave.addActionListener(e -> saveProfileChanges());
 
         editButtons.add(btnReset);
@@ -181,16 +179,16 @@ public class PerfilView extends JPanel {
         editCard.add(editForm, BorderLayout.CENTER);
         editCard.add(editBottom, BorderLayout.SOUTH);
 
-        // RIGHT CARD: Campos Protegidos e Detalhes do Sistema (Regra RBAC)
+        // RIGHT CARD: Campos Protegidos
         RoundedPanel protectedCard = new RoundedPanel(16);
         protectedCard.setLayout(new BorderLayout(0, 14));
         protectedCard.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        JLabel lblProtTitle = new JLabel("🔒 Campos Protegidos (Regra de Negócio)");
+        JLabel lblProtTitle = new JLabel("Campos Protegidos (Regra RBAC)");
         lblProtTitle.setFont(AppTheme.FONT_SUBTITLE);
         lblProtTitle.setForeground(AppTheme.getTextPrimary());
 
-        JLabel lblProtDesc = new JLabel("<html>O aluno <b>NÃO</b> pode alterar diretamente estes campos na rota <code>/usuarios/me</code>:</html>");
+        JLabel lblProtDesc = new JLabel("<html>Campos protegidos imutaveis diretamente pelo aluno:</html>");
         lblProtDesc.setFont(AppTheme.FONT_SMALL);
         lblProtDesc.setForeground(AppTheme.getTextSecondary());
 
@@ -214,17 +212,16 @@ public class PerfilView extends JPanel {
         txtIdReadOnly = new ModernTextField();
         txtIdReadOnly.setEnabled(false);
 
-        protForm.add(createFieldGroup("E-MAIL (IMUTÁVEL):", txtEmailReadOnly));
-        protForm.add(createFieldGroup("NÍVEL RBAC (ADMIN ONLY):", txtNivelReadOnly));
-        protForm.add(createFieldGroup("MÉDIA DE AVALIAÇÃO:", txtRatingReadOnly));
-        protForm.add(createFieldGroup("UUID DO USUÁRIO:", txtIdReadOnly));
+        protForm.add(createFieldGroup("E-MAIL (IMUTAVEL):", txtEmailReadOnly));
+        protForm.add(createFieldGroup("NIVEL RBAC:", txtNivelReadOnly));
+        protForm.add(createFieldGroup("MEDIA DE AVALIACAO:", txtRatingReadOnly));
+        protForm.add(createFieldGroup("UUID DO USUARIO:", txtIdReadOnly));
 
-        // Info box inside right card
         RoundedPanel infoBox = new RoundedPanel(10);
         infoBox.setCustomBackground(AppTheme.isDarkMode() ? new Color(0x13, 0x1B, 0x2E) : new Color(0xEE, 0xF2, 0xFF));
         infoBox.setBorder(new EmptyBorder(10, 14, 10, 14));
         infoBox.setLayout(new BorderLayout());
-        JLabel lblSecurityNote = new JLabel("<html>ℹ️ <b>Controle de Acesso:</b> Alterações de nível de acesso (ALUNO/ADMIN) e e-mail só podem ser efetuadas no Painel Administrativo.</html>");
+        JLabel lblSecurityNote = new JLabel("<html>[Controle de Acesso] Alteracoes de nivel de acesso (ALUNO/ADMIN) sao restritas ao Painel Administrativo.</html>");
         lblSecurityNote.setFont(AppTheme.FONT_SMALL);
         lblSecurityNote.setForeground(ModernColors.PRIMARY_LIGHT);
         infoBox.add(lblSecurityNote, BorderLayout.CENTER);
@@ -255,27 +252,25 @@ public class PerfilView extends JPanel {
     public void refreshUserData() {
         Usuario u = apiService.getUsuarioLogado();
         if (u == null) {
-            lblNomeHeader.setText("Não Autenticado");
+            lblNomeHeader.setText("Nao Autenticado");
+            lblEmailHeader.setText("Faca login para ver seus dados.");
             return;
         }
 
-        // Header info
         lblNomeHeader.setText(u.getNome_completo());
         lblEmailHeader.setText(u.getEmail());
         avatarPanel.setUser(u.getNome_completo(), u.getFoto_url());
-        badgeRole.setText("ADMIN".equalsIgnoreCase(u.getNivel()) ? "👑 ADMIN" : "🎓 ALUNO");
+        badgeRole.setText(u.getNivel());
         badgeRole.setBadgeColors("ADMIN".equalsIgnoreCase(u.getNivel()) ? ModernColors.BADGE_ADMIN_BG : ModernColors.BADGE_ALUNO_BG, Color.WHITE);
-        lblRating.setText("⭐ " + (u.getMedia_avaliacao() != null ? u.getMedia_avaliacao() : "0.00") + " / 5.00");
-        lblInstituicao.setText("🏛️ " + (u.getInstituicao_nome() != null ? u.getInstituicao_nome() : "Instituição de Ensino"));
-        lblCriadoEm.setText("📅 " + (u.getCriado_em() != null ? u.getCriado_em().split("T")[0] : "Recente"));
+        lblRating.setText("Nota: " + (u.getMedia_avaliacao() != null ? u.getMedia_avaliacao() : "0.00") + " / 5.00");
+        lblInstituicao.setText("Instituicao: " + (u.getInstituicao_nome() != null ? u.getInstituicao_nome() : "Universidade"));
+        lblCriadoEm.setText("Membro desde: " + (u.getCriado_em() != null ? u.getCriado_em().split("T")[0] : "Recente"));
 
-        // Editable fields
         txtNome.setText(u.getNome_completo());
         txtTelefone.setText(u.getTelefone() != null ? u.getTelefone() : "");
         txtCurso.setText(u.getCurso() != null ? u.getCurso() : "");
         txtFotoUrl.setText(u.getFoto_url() != null ? u.getFoto_url() : "");
 
-        // Readonly fields
         txtEmailReadOnly.setText(u.getEmail());
         txtNivelReadOnly.setText(u.getNivel());
         txtRatingReadOnly.setText(u.getMedia_avaliacao() != null ? u.getMedia_avaliacao() : "0.00");
@@ -292,7 +287,7 @@ public class PerfilView extends JPanel {
         String fotoUrl = txtFotoUrl.getText().trim();
 
         if (nome.isEmpty()) {
-            lblStatus.setText("Nome completo não pode ficar vazio.");
+            lblStatus.setText("Nome completo nao pode ficar vazio.");
             lblStatus.setForeground(ModernColors.DANGER);
             return;
         }

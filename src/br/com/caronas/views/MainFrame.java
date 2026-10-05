@@ -1,9 +1,6 @@
 package br.com.caronas.views;
 
-import br.com.caronas.components.AvatarPanel;
-import br.com.caronas.components.BadgeLabel;
-import br.com.caronas.components.RoundedButton;
-import br.com.caronas.components.RoundedPanel;
+import br.com.caronas.components.*;
 import br.com.caronas.model.Usuario;
 import br.com.caronas.service.ApiService;
 import br.com.caronas.service.MockApiService;
@@ -23,11 +20,18 @@ public class MainFrame extends JFrame {
     private CardLayout cardLayout;
 
     // View instances
-    private LoginView loginView;
-    private CadastroView cadastroView;
+    private DashboardView dashboardView;
+    private BuscarCaronasView buscarCaronasView;
+    private OferecerCaronaView oferecerCaronaView;
+    private MinhasCaronasView minhasCaronasView;
+    private MinhasReservasView minhasReservasView;
+    private MeusVeiculosView meusVeiculosView;
+    private AvaliacoesView avaliacoesView;
     private PerfilView perfilView;
     private AdminUsuariosView adminUsuariosView;
     private ApiConsoleView apiConsoleView;
+    private LoginView loginView;
+    private CadastroView cadastroView;
 
     // Header components
     private AvatarPanel headerAvatar;
@@ -40,7 +44,7 @@ public class MainFrame extends JFrame {
 
     // Sidebar navigation buttons
     private final Map<String, RoundedButton> navButtons = new HashMap<>();
-    private String activeNav = "PERFIL";
+    private String activeNav = "DASHBOARD";
 
     public MainFrame() {
         this.apiService = new MockApiService();
@@ -48,10 +52,10 @@ public class MainFrame extends JFrame {
     }
 
     private void initUI() {
-        setTitle("Sistema de Caronas — Autenticação JWT & RBAC (Feature 1)");
+        setTitle("UniRide — Sistema de Caronas Universitárias (App Completo)");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1240, 820);
-        setMinimumSize(new Dimension(1000, 700));
+        setSize(1320, 860);
+        setMinimumSize(new Dimension(1100, 720));
         setLocationRelativeTo(null);
 
         // Root panel
@@ -74,34 +78,49 @@ public class MainFrame extends JFrame {
         contentContainer = new JPanel(cardLayout);
         contentContainer.setOpaque(false);
 
-        loginView = new LoginView(apiService, this::onLoginSuccess, () -> navigateTo("CADASTRO"));
-        cadastroView = new CadastroView(apiService, this::onCadastroSuccess, () -> navigateTo("LOGIN"));
+        dashboardView = new DashboardView(apiService, this::navigateTo);
+        buscarCaronasView = new BuscarCaronasView(apiService);
+        oferecerCaronaView = new OferecerCaronaView(apiService, this::navigateTo);
+        minhasCaronasView = new MinhasCaronasView(apiService, this::navigateTo);
+        minhasReservasView = new MinhasReservasView(apiService, this::navigateTo);
+        meusVeiculosView = new MeusVeiculosView(apiService);
+        avaliacoesView = new AvaliacoesView(apiService);
         perfilView = new PerfilView(apiService, this::updateHeaderUserInfo);
         adminUsuariosView = new AdminUsuariosView(apiService, this::switchDemoRole);
         apiConsoleView = new ApiConsoleView(apiService);
 
-        contentContainer.add(loginView, "LOGIN");
-        contentContainer.add(cadastroView, "CADASTRO");
+        loginView = new LoginView(apiService, this::onLoginSuccess, () -> navigateTo("CADASTRO"));
+        cadastroView = new CadastroView(apiService, this::onCadastroSuccess, () -> navigateTo("LOGIN"));
+
+        contentContainer.add(dashboardView, "DASHBOARD");
+        contentContainer.add(buscarCaronasView, "BUSCAR");
+        contentContainer.add(oferecerCaronaView, "OFERECER");
+        contentContainer.add(minhasCaronasView, "MINHAS_CARONAS");
+        contentContainer.add(minhasReservasView, "MINHAS_RESERVAS");
+        contentContainer.add(meusVeiculosView, "VEICULOS");
+        contentContainer.add(avaliacoesView, "AVALIACOES");
         contentContainer.add(perfilView, "PERFIL");
         contentContainer.add(adminUsuariosView, "ADMIN");
         contentContainer.add(apiConsoleView, "CONSOLE");
+        contentContainer.add(loginView, "LOGIN");
+        contentContainer.add(cadastroView, "CADASTRO");
 
         centerPanel.add(contentContainer, BorderLayout.CENTER);
         rootPanel.add(centerPanel, BorderLayout.CENTER);
 
         setContentPane(rootPanel);
 
-        // Initial navigation
+        // Initial state
         updateHeaderUserInfo();
         if (apiService.isAuthenticated()) {
-            navigateTo("PERFIL");
+            navigateTo("DASHBOARD");
         } else {
             navigateTo("LOGIN");
         }
 
         AppTheme.addThemeChangeListener(() -> {
             rootPanel.setBackground(AppTheme.getBackground());
-            btnHeaderThemeToggle.setText(AppTheme.isDarkMode() ? "🌙 Dark" : "☀️ Light");
+            btnHeaderThemeToggle.setText(AppTheme.isDarkMode() ? "Dark" : "Light");
             updateNavButtonStyles();
         });
     }
@@ -117,17 +136,18 @@ public class MainFrame extends JFrame {
         JPanel brandPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
         brandPanel.setOpaque(false);
 
-        JLabel lblLogo = new JLabel("🚗");
-        lblLogo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
+        JLabel lblLogo = new JLabel("[UR]");
+        lblLogo.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblLogo.setForeground(ModernColors.PRIMARY);
 
         JPanel brandText = new JPanel(new GridLayout(2, 1, 0, 1));
         brandText.setOpaque(false);
 
-        JLabel lblTitle = new JLabel("CARONAS UNIVERSITÁRIAS");
+        JLabel lblTitle = new JLabel("UNIRIDE • CARONAS UNIVERSITÁRIAS");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 15));
         lblTitle.setForeground(ModernColors.PRIMARY_LIGHT);
 
-        JLabel lblSub = new JLabel("Feature 1: Autenticação JWT, Perfis e RBAC");
+        JLabel lblSub = new JLabel("Plataforma Acadêmica de Mobilidade e Caronas Compartilhadas");
         lblSub.setFont(AppTheme.FONT_SMALL);
         lblSub.setForeground(AppTheme.getTextSecondary());
 
@@ -138,7 +158,7 @@ public class MainFrame extends JFrame {
         brandPanel.add(brandText);
 
         // Right User Info & Actions
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         rightPanel.setOpaque(false);
 
         // Active user pill
@@ -170,17 +190,17 @@ public class MainFrame extends JFrame {
         userPill.add(headerBadgeRole);
 
         // Quick role toggle button
-        btnHeaderQuickSwitch = new RoundedButton("🔄 Alternar Perfil", RoundedButton.ButtonStyle.GHOST);
+        btnHeaderQuickSwitch = new RoundedButton("Alternar Perfil Demo", RoundedButton.ButtonStyle.GHOST);
         btnHeaderQuickSwitch.setFont(AppTheme.FONT_SMALL_BOLD);
         btnHeaderQuickSwitch.addActionListener(e -> switchDemoRole());
 
         // Theme toggle button
-        btnHeaderThemeToggle = new RoundedButton("🌙 Dark", RoundedButton.ButtonStyle.GHOST);
+        btnHeaderThemeToggle = new RoundedButton("Dark", RoundedButton.ButtonStyle.GHOST);
         btnHeaderThemeToggle.setFont(AppTheme.FONT_SMALL_BOLD);
         btnHeaderThemeToggle.addActionListener(e -> AppTheme.toggleTheme(this));
 
         // Logout
-        btnHeaderLogout = new RoundedButton("🔒 Sair", RoundedButton.ButtonStyle.DANGER);
+        btnHeaderLogout = new RoundedButton("Sair", RoundedButton.ButtonStyle.DANGER);
         btnHeaderLogout.setFont(AppTheme.FONT_SMALL_BOLD);
         btnHeaderLogout.addActionListener(e -> onLogout());
 
@@ -197,32 +217,42 @@ public class MainFrame extends JFrame {
 
     private JPanel createSidebarPanel() {
         RoundedPanel sidebar = new RoundedPanel(0);
-        sidebar.setPreferredSize(new Dimension(240, 0));
+        sidebar.setPreferredSize(new Dimension(250, 0));
         sidebar.setLayout(new BorderLayout());
-        sidebar.setBorder(new EmptyBorder(20, 16, 20, 16));
+        sidebar.setBorder(new EmptyBorder(16, 12, 16, 12));
 
-        JPanel navList = new JPanel(new GridLayout(6, 1, 0, 10));
+        JPanel navList = new JPanel(new GridLayout(10, 1, 0, 6));
         navList.setOpaque(false);
 
-        RoundedButton btnLogin = createNavButton("🔑  Login (/auth)", "LOGIN");
-        RoundedButton btnCadastro = createNavButton("📝  Cadastrar Aluno", "CADASTRO");
-        RoundedButton btnPerfil = createNavButton("👤  Meu Perfil (/me)", "PERFIL");
-        RoundedButton btnAdmin = createNavButton("🛡️  Painel Admin (RBAC)", "ADMIN");
-        RoundedButton btnConsole = createNavButton("📡  Console API & Logs", "CONSOLE");
+        RoundedButton btnDashboard = createNavButton("Início (Painel)", "DASHBOARD");
+        RoundedButton btnBuscar = createNavButton("Buscar Caronas", "BUSCAR");
+        RoundedButton btnOferecer = createNavButton("Oferecer Carona", "OFERECER");
+        RoundedButton btnMinhasCaronas = createNavButton("Minhas Caronas", "MINHAS_CARONAS");
+        RoundedButton btnMinhasReservas = createNavButton("Minhas Reservas", "MINHAS_RESERVAS");
+        RoundedButton btnVeiculos = createNavButton("Meus Veículos", "VEICULOS");
+        RoundedButton btnAvaliacoes = createNavButton("Avaliações", "AVALIACOES");
+        RoundedButton btnPerfil = createNavButton("Meu Perfil", "PERFIL");
+        RoundedButton btnAdmin = createNavButton("Painel Admin (RBAC)", "ADMIN");
+        RoundedButton btnConsole = createNavButton("Console API & Logs", "CONSOLE");
 
+        navList.add(btnDashboard);
+        navList.add(btnBuscar);
+        navList.add(btnOferecer);
+        navList.add(btnMinhasCaronas);
+        navList.add(btnMinhasReservas);
+        navList.add(btnVeiculos);
+        navList.add(btnAvaliacoes);
         navList.add(btnPerfil);
         navList.add(btnAdmin);
         navList.add(btnConsole);
-        navList.add(btnLogin);
-        navList.add(btnCadastro);
 
         // Bottom Spec Badge
         RoundedPanel specInfo = new RoundedPanel(10);
         specInfo.setCustomBackground(AppTheme.isDarkMode() ? new Color(0x13, 0x1B, 0x2E) : new Color(0xEE, 0xF2, 0xFF));
         specInfo.setLayout(new BorderLayout());
-        specInfo.setBorder(new EmptyBorder(10, 12, 10, 12));
+        specInfo.setBorder(new EmptyBorder(8, 10, 8, 10));
 
-        JLabel lblSpec = new JLabel("<html><b>Dev 01</b> • FT01, FT02, FT03<br><font color='#818cf8'>JWT • Bcrypt • RBAC</font></html>");
+        JLabel lblSpec = new JLabel("<html><b>UniRide v2.0</b> • Sistema Completo<br><font color='#818cf8'>Caronas • Reservas • Avaliações</font></html>");
         lblSpec.setFont(AppTheme.FONT_SMALL);
         specInfo.add(lblSpec, BorderLayout.CENTER);
 
@@ -236,17 +266,38 @@ public class MainFrame extends JFrame {
         RoundedButton btn = new RoundedButton(text, RoundedButton.ButtonStyle.GHOST);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setFont(AppTheme.FONT_BODY_BOLD);
-        btn.setPreferredSize(new Dimension(0, 44));
+        btn.setPreferredSize(new Dimension(0, 38));
         btn.addActionListener(e -> navigateTo(targetView));
         navButtons.put(targetView, btn);
         return btn;
     }
 
     public void navigateTo(String viewName) {
+        // Enforce authentication for private views
+        boolean isPublicView = "LOGIN".equals(viewName) || "CADASTRO".equals(viewName) || "BUSCAR".equals(viewName) || "CONSOLE".equals(viewName);
+        if (!apiService.isAuthenticated() && !isPublicView) {
+            ToastNotification.show(this, "Acesso Restrito", "Faça login para acessar esta funcionalidade.", ToastNotification.ToastType.WARNING);
+            viewName = "LOGIN";
+        }
+
         this.activeNav = viewName;
         cardLayout.show(contentContainer, viewName);
 
-        if ("PERFIL".equals(viewName)) {
+        if ("DASHBOARD".equals(viewName)) {
+            dashboardView.refreshData();
+        } else if ("BUSCAR".equals(viewName)) {
+            buscarCaronasView.executeSearch();
+        } else if ("OFERECER".equals(viewName)) {
+            oferecerCaronaView.refreshVeiculos();
+        } else if ("MINHAS_CARONAS".equals(viewName)) {
+            minhasCaronasView.loadCaronas();
+        } else if ("MINHAS_RESERVAS".equals(viewName)) {
+            minhasReservasView.loadReservas();
+        } else if ("VEICULOS".equals(viewName)) {
+            meusVeiculosView.loadVeiculos();
+        } else if ("AVALIACOES".equals(viewName)) {
+            avaliacoesView.loadAvaliacoes();
+        } else if ("PERFIL".equals(viewName)) {
             perfilView.refreshUserData();
         } else if ("ADMIN".equals(viewName)) {
             adminUsuariosView.checkAccessAndLoad();
@@ -273,7 +324,7 @@ public class MainFrame extends JFrame {
             lblHeaderNome.setText(u.getNome_completo());
             lblHeaderEmail.setText(u.getEmail());
             headerAvatar.setUser(u.getNome_completo(), u.getFoto_url());
-            headerBadgeRole.setText("ADMIN".equalsIgnoreCase(u.getNivel()) ? "👑 ADMIN" : "🎓 ALUNO");
+            headerBadgeRole.setText("ADMIN".equalsIgnoreCase(u.getNivel()) ? "[ADMIN]" : "[ALUNO]");
             headerBadgeRole.setBadgeColors("ADMIN".equalsIgnoreCase(u.getNivel()) ? ModernColors.BADGE_ADMIN_BG : ModernColors.BADGE_ALUNO_BG, Color.WHITE);
             headerBadgeRole.setVisible(true);
             btnHeaderLogout.setVisible(true);
@@ -291,27 +342,28 @@ public class MainFrame extends JFrame {
     private void switchDemoRole() {
         Usuario current = apiService.getUsuarioLogado();
         if (current == null || current.isAluno()) {
-            // Switch to Admin
+            // Switch to Admin Ana
             apiService.login("ana.lima@faculdade.br", "admin123");
         } else {
-            // Switch to Aluno
+            // Switch to Aluno Carlos
             apiService.login("carlos.edu@gmail.com", "senhaSegura123");
         }
         updateHeaderUserInfo();
-        perfilView.refreshUserData();
-        if ("ADMIN".equals(activeNav)) {
-            adminUsuariosView.checkAccessAndLoad();
+        if ("LOGIN".equals(activeNav) || "CADASTRO".equals(activeNav)) {
+            navigateTo("DASHBOARD");
+        } else {
+            navigateTo(activeNav);
         }
     }
 
     private void onLoginSuccess() {
         updateHeaderUserInfo();
-        navigateTo("PERFIL");
+        navigateTo("DASHBOARD");
     }
 
     private void onCadastroSuccess() {
         updateHeaderUserInfo();
-        navigateTo("PERFIL");
+        navigateTo("DASHBOARD");
     }
 
     private void onLogout() {

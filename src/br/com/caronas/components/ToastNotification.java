@@ -44,20 +44,20 @@ public class ToastNotification extends JWindow {
         switch (type) {
             case SUCCESS:
                 accentColor = ModernColors.SUCCESS;
-                iconSymbol = "✓";
+                iconSymbol = "OK";
                 break;
             case ERROR:
                 accentColor = ModernColors.DANGER;
-                iconSymbol = "✕";
+                iconSymbol = "X";
                 break;
             case WARNING:
                 accentColor = ModernColors.WARNING;
-                iconSymbol = "⚠";
+                iconSymbol = "!";
                 break;
             case INFO:
             default:
                 accentColor = ModernColors.INFO;
-                iconSymbol = "ℹ";
+                iconSymbol = "i";
                 break;
         }
 
@@ -81,7 +81,7 @@ public class ToastNotification extends JWindow {
         };
         lblIcon.setPreferredSize(new Dimension(28, 28));
         lblIcon.setForeground(Color.WHITE);
-        lblIcon.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblIcon.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
         // Content
         JPanel contentPanel = new JPanel(new GridLayout(2, 1, 0, 2));
@@ -99,8 +99,8 @@ public class ToastNotification extends JWindow {
         contentPanel.add(lblMsg);
 
         // Close Button
-        JLabel btnClose = new JLabel("✕");
-        btnClose.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        JLabel btnClose = new JLabel("x");
+        btnClose.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnClose.setForeground(AppTheme.getTextMuted());
         btnClose.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnClose.addMouseListener(new MouseAdapter() {
