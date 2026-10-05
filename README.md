@@ -126,11 +126,21 @@ Não é necessário baixar dependências adicionais pela internet.
 
 ## 🔨 Compilação do Projeto
 
-### No Windows (Prompt de Comando ou PowerShell):
+Execute os comandos na pasta raiz do projeto.
+
+### No Windows — Prompt de Comando (CMD):
 
 ```cmd
 if not exist bin mkdir bin
 javac -encoding UTF-8 -cp "lib/flatlaf-3.5.4.jar;src" -d bin src/br/com/caronas/Main.java src/br/com/caronas/model/*.java src/br/com/caronas/service/*.java src/br/com/caronas/theme/*.java src/br/com/caronas/components/*.java src/br/com/caronas/views/*.java src/br/com/caronas/test/*.java
+```
+
+### No Windows — PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force -Path bin | Out-Null
+$fontesJava = Get-ChildItem -Path src -Recurse -Filter *.java | Select-Object -ExpandProperty FullName
+javac -encoding UTF-8 -cp "lib/flatlaf-3.5.4.jar;src" -d bin $fontesJava
 ```
 
 ### No Linux / macOS:
@@ -146,28 +156,44 @@ javac -encoding UTF-8 -cp "lib/flatlaf-3.5.4.jar:src" -d bin $(find src -name "*
 
 ### Opção 1: Via Scripts Automáticos
 
-- **Windows:**
-  ```cmd
-  executar.bat
-  ```
+Os scripts abaixo compilam e iniciam o aplicativo. Não é necessário compilar manualmente antes.
 
-- **Linux / macOS:**
-  ```bash
-  chmod +x executar.sh testar.sh
-  ./executar.sh
-  ```
+**Windows — Prompt de Comando (CMD):**
+
+```cmd
+executar.bat
+```
+
+**Windows — PowerShell:**
+
+```powershell
+.\executar.bat
+```
+
+No PowerShell, use `.\` para executar o script localizado na pasta atual.
+
+**Linux / macOS:**
+
+```bash
+chmod +x executar.sh testar.sh
+./executar.sh
+```
 
 ### Opção 2: Via Linha de Comando Manual
 
-- **Windows:**
-  ```cmd
-  java -cp "bin;lib/flatlaf-3.5.4.jar" br.com.caronas.Main
-  ```
+Depois de compilar o projeto com sucesso:
 
-- **Linux / macOS:**
-  ```bash
-  java -cp "bin:lib/flatlaf-3.5.4.jar" br.com.caronas.Main
-  ```
+**Windows — CMD ou PowerShell:**
+
+```powershell
+java -cp "bin;lib/flatlaf-3.5.4.jar" br.com.caronas.Main
+```
+
+**Linux / macOS:**
+
+```bash
+java -cp "bin:lib/flatlaf-3.5.4.jar" br.com.caronas.Main
+```
 
 ---
 
