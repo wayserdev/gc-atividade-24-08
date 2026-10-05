@@ -37,7 +37,6 @@ public class AdminUsuariosView extends JPanel {
     private JPanel forbiddenPanel;
     private JPanel mainAdminPanel;
     private CardLayout cardLayout;
-    private JLabel lblAccessDescription;
 
     public AdminUsuariosView(ApiService apiService, Runnable onRoleSwitchRequested) {
         this.apiService = apiService;
@@ -73,7 +72,6 @@ public class AdminUsuariosView extends JPanel {
         JPanel leftToolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         leftToolbar.setOpaque(false);
 
-        JLabel lblSearch = new JLabel("🔍");
         txtBusca = new ModernTextField("Buscar por nome ou e-mail...", 16);
         txtBusca.setPreferredSize(new Dimension(240, 36));
         txtBusca.addActionListener(e -> {
@@ -95,23 +93,22 @@ public class AdminUsuariosView extends JPanel {
             loadData();
         });
 
-        leftToolbar.add(lblSearch);
         leftToolbar.add(txtBusca);
-        leftToolbar.add(new JLabel("Nível:"));
+        leftToolbar.add(new JLabel("Nivel:"));
         leftToolbar.add(cbNivelFiltro);
         leftToolbar.add(btnBuscar);
 
         JPanel rightToolbar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         rightToolbar.setOpaque(false);
 
-        lblTotalRegistros = new JLabel("Total: 0 usuários");
+        lblTotalRegistros = new JLabel("Total: 0 usuarios");
         lblTotalRegistros.setFont(AppTheme.FONT_SMALL_BOLD);
         lblTotalRegistros.setForeground(ModernColors.PRIMARY_LIGHT);
 
-        RoundedButton btnEdit = new RoundedButton("✏️ Editar/Promover", RoundedButton.ButtonStyle.SECONDARY);
+        RoundedButton btnEdit = new RoundedButton("Editar/Promover", RoundedButton.ButtonStyle.SECONDARY);
         btnEdit.addActionListener(e -> onEditSelectedUser());
 
-        RoundedButton btnDelete = new RoundedButton("🗑️ Excluir", RoundedButton.ButtonStyle.DANGER);
+        RoundedButton btnDelete = new RoundedButton("Excluir", RoundedButton.ButtonStyle.DANGER);
         btnDelete.addActionListener(e -> onDeleteSelectedUser());
 
         rightToolbar.add(lblTotalRegistros);
@@ -129,7 +126,6 @@ public class AdminUsuariosView extends JPanel {
         tableModel = new UsuariosTableModel();
         table = new ModernTable(tableModel);
 
-        // Custom column renderers
         table.getColumnModel().getColumn(2).setCellRenderer(new RoleBadgeCellRenderer());
         table.getColumnModel().getColumn(5).setCellRenderer(new RatingCellRenderer());
 
@@ -147,7 +143,7 @@ public class AdminUsuariosView extends JPanel {
 
         JPanel leftPagination = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         leftPagination.setOpaque(false);
-        leftPagination.add(new JLabel("Itens por página:"));
+        leftPagination.add(new JLabel("Itens por pagina:"));
         cbLimite = new JComboBox<>(new Integer[]{5, 10, 20, 50});
         cbLimite.setSelectedItem(10);
         cbLimite.addActionListener(e -> {
@@ -159,10 +155,10 @@ public class AdminUsuariosView extends JPanel {
         JPanel rightPagination = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         rightPagination.setOpaque(false);
 
-        lblPaginaInfo = new JLabel("Página 1 de 1");
+        lblPaginaInfo = new JLabel("Pagina 1 de 1");
         lblPaginaInfo.setFont(AppTheme.FONT_SMALL_BOLD);
 
-        RoundedButton btnPrev = new RoundedButton("◀ Anterior", RoundedButton.ButtonStyle.GHOST);
+        RoundedButton btnPrev = new RoundedButton("<- Anterior", RoundedButton.ButtonStyle.GHOST);
         btnPrev.addActionListener(e -> {
             if (currentPage > 1) {
                 currentPage--;
@@ -170,7 +166,7 @@ public class AdminUsuariosView extends JPanel {
             }
         });
 
-        RoundedButton btnNext = new RoundedButton("Próxima ▶", RoundedButton.ButtonStyle.GHOST);
+        RoundedButton btnNext = new RoundedButton("Proxima ->", RoundedButton.ButtonStyle.GHOST);
         btnNext.addActionListener(e -> {
             if (currentPage < totalPages) {
                 currentPage++;
@@ -203,23 +199,23 @@ public class AdminUsuariosView extends JPanel {
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
 
-        JLabel lblLock = new JLabel("🚫 403 Forbidden", SwingConstants.CENTER);
-        lblLock.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        JLabel lblLock = new JLabel("403 Forbidden - Acesso Restrito", SwingConstants.CENTER);
+        lblLock.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblLock.setForeground(ModernColors.DANGER);
         lblLock.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblSub = new JLabel("Acesso restrito para administradores", SwingConstants.CENTER);
+        JLabel lblSub = new JLabel("Modulo exclusivo para administradores", SwingConstants.CENTER);
         lblSub.setFont(AppTheme.FONT_SUBTITLE);
         lblSub.setForeground(AppTheme.getTextPrimary());
         lblSub.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        lblAccessDescription = new JLabel("", SwingConstants.CENTER);
-        lblAccessDescription.setFont(AppTheme.FONT_BODY);
-        lblAccessDescription.setForeground(AppTheme.getTextSecondary());
-        lblAccessDescription.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblAccessDescription.setBorder(new EmptyBorder(16, 10, 20, 10));
+        JLabel lblDesc = new JLabel("<html><center>Voce esta atualmente autenticado com o perfil <b>ALUNO</b>.<br>De acordo com o controle de acesso RBAC, apenas usuarios com perfil <b>ADMIN</b> tem permissao para acessar a rota <code>/admin/usuarios</code>.</center></html>", SwingConstants.CENTER);
+        lblDesc.setFont(AppTheme.FONT_BODY);
+        lblDesc.setForeground(AppTheme.getTextSecondary());
+        lblDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblDesc.setBorder(new EmptyBorder(16, 10, 20, 10));
 
-        RoundedButton btnSwitchAdmin = new RoundedButton("👑 Entrar como Administrador (Ana)", RoundedButton.ButtonStyle.ACCENT);
+        RoundedButton btnSwitchAdmin = new RoundedButton("Entrar como Administradora (Ana)", RoundedButton.ButtonStyle.ACCENT);
         btnSwitchAdmin.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnSwitchAdmin.addActionListener(e -> {
             if (onRoleSwitchRequested != null) {
@@ -230,7 +226,7 @@ public class AdminUsuariosView extends JPanel {
         content.add(lblLock);
         content.add(Box.createVerticalStrut(10));
         content.add(lblSub);
-        content.add(lblAccessDescription);
+        content.add(lblDesc);
         content.add(btnSwitchAdmin);
 
         card.add(content, BorderLayout.CENTER);
@@ -242,13 +238,7 @@ public class AdminUsuariosView extends JPanel {
             cardLayout.show(this, "ADMIN");
             loadData();
         } else {
-            Usuario usuario = apiService.getUsuarioLogado();
-            String perfil = usuario == null ? "não autenticado" : usuario.getNivel();
-            lblAccessDescription.setText("<html><center>Seu estado atual é <b>" + perfil + "</b>.<br>"
-                    + "De acordo com o controle de acesso RBAC, apenas usuários com perfil <b>ADMIN</b> "
-                    + "têm permissão para acessar a rota <code>/admin/usuarios</code>.</center></html>");
             cardLayout.show(this, "FORBIDDEN");
-            // Dispara chamada para gerar evento 403 no log
             apiService.getUsuariosAdmin("", "TODOS", 1, 10);
         }
     }
@@ -271,8 +261,8 @@ public class AdminUsuariosView extends JPanel {
             totalPages = Math.max(1, result.getTotalPaginas());
 
             tableModel.fireTableDataChanged();
-            lblTotalRegistros.setText(String.format("Total: %d usuário(s)", totalRegistros));
-            lblPaginaInfo.setText(String.format("Página %d de %d (%d registros)", currentPage, totalPages, totalRegistros));
+            lblTotalRegistros.setText(String.format("Total: %d usuario(s)", totalRegistros));
+            lblPaginaInfo.setText(String.format("Pagina %d de %d (%d registros)", currentPage, totalPages, totalRegistros));
         } else {
             ToastNotification.show(this, "Erro ao listar (" + resp.getStatusCode() + ")", resp.getError().getMensagemFormatada(), ToastNotification.ToastType.ERROR);
         }
@@ -281,41 +271,35 @@ public class AdminUsuariosView extends JPanel {
     private void onEditSelectedUser() {
         int row = table.getSelectedRow();
         if (row < 0 || row >= currentUsuarios.size()) {
-            ToastNotification.show(this, "Seleção necessária", "Selecione um usuário na tabela para editar.", ToastNotification.ToastType.WARNING);
+            ToastNotification.show(this, "Selecao necessaria", "Selecione um usuario na tabela para editar.", ToastNotification.ToastType.WARNING);
             return;
         }
 
         Usuario u = currentUsuarios.get(row);
-        UsuarioEditDialog dialog = new UsuarioEditDialog(SwingUtilities.getWindowAncestor(this), apiService, u);
+        UsuarioEditDialog dialog = new UsuarioEditDialog(SwingUtilities.getWindowAncestor(this), apiService, u, this::loadData);
         dialog.setVisible(true);
-
-        if (dialog.isSaved()) {
-            ToastNotification.show(this, "Usuário Atualizado!", "Dados do usuário atualizados pelo administrador com sucesso.", ToastNotification.ToastType.SUCCESS);
-            loadData();
-        }
     }
 
     private void onDeleteSelectedUser() {
         int row = table.getSelectedRow();
         if (row < 0 || row >= currentUsuarios.size()) {
-            ToastNotification.show(this, "Seleção necessária", "Selecione um usuário na tabela para excluir.", ToastNotification.ToastType.WARNING);
+            ToastNotification.show(this, "Selecao necessaria", "Selecione um usuario na tabela para excluir.", ToastNotification.ToastType.WARNING);
             return;
         }
 
         Usuario u = currentUsuarios.get(row);
 
-        // Regra de auto-bloqueio
         Usuario adminLogado = apiService.getUsuarioLogado();
         if (adminLogado != null && adminLogado.getId().equals(u.getId())) {
-            ToastNotification.show(this, "Ação Não Permitida (400 Bad Request)",
-                    "O Administrador não pode deletar a si mesmo (evitar auto-bloqueio).", ToastNotification.ToastType.ERROR);
+            ToastNotification.show(this, "Acao Nao Permitida (400 Bad Request)",
+                    "O Administrador nao pode deletar a si mesmo (evitar auto-bloqueio).", ToastNotification.ToastType.ERROR);
             return;
         }
 
         int opt = JOptionPane.showConfirmDialog(
                 this,
-                "Tem certeza que deseja excluir o usuário " + u.getNome_completo() + " (" + u.getEmail() + ")?\n\nEsta ação cancelará automaticamente quaisquer caronas associadas.",
-                "Confirmar Exclusão (DELETE /admin/usuarios/:id)",
+                "Tem certeza que deseja excluir o usuario " + u.getNome_completo() + " (" + u.getEmail() + ")?\n\nEsta acao cancelara automaticamente quaisquer caronas associadas.",
+                "Confirmar Exclusao (DELETE /admin/usuarios/:id)",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE
         );
@@ -323,7 +307,7 @@ public class AdminUsuariosView extends JPanel {
         if (opt == JOptionPane.YES_OPTION) {
             ApiResponse<String> resp = apiService.deleteUsuarioAdmin(u.getId());
             if (resp.isSuccess()) {
-                ToastNotification.show(this, "Usuário Removido", resp.getData(), ToastNotification.ToastType.SUCCESS);
+                ToastNotification.show(this, "Usuario Removido", resp.getData(), ToastNotification.ToastType.SUCCESS);
                 loadData();
             } else {
                 ToastNotification.show(this, "Erro ao excluir", resp.getError().getMensagemFormatada(), ToastNotification.ToastType.ERROR);
@@ -332,7 +316,7 @@ public class AdminUsuariosView extends JPanel {
     }
 
     private class UsuariosTableModel extends AbstractTableModel {
-        private final String[] columns = {"ID", "Nome Completo", "Nível (RBAC)", "E-mail", "Telefone", "Avaliação", "Curso"};
+        private final String[] columns = {"ID", "Nome Completo", "Nivel (RBAC)", "E-mail", "Telefone", "Avaliacao", "Curso"};
 
         @Override
         public int getRowCount() {
@@ -365,7 +349,7 @@ public class AdminUsuariosView extends JPanel {
                 case 4:
                     return u.getTelefone();
                 case 5:
-                    return u.getMedia_avaliacao();
+                    return u.getMedia_avaliacao() + " / 5.00";
                 case 6:
                     return u.getCurso();
                 default:
@@ -391,7 +375,7 @@ public class AdminUsuariosView extends JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             String val = value != null ? value.toString() : "0.00";
-            setText("⭐ " + val);
+            setText(val);
             setForeground(ModernColors.GOLD);
             setFont(AppTheme.FONT_BODY_BOLD);
             return this;

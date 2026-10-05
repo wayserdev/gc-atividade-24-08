@@ -1,17 +1,52 @@
-# Compiled class file and build directory
+# =========================================================
+# GITIGNORE - UNIRIDE CARONAS UNIVERSITÁRIAS
+# =========================================================
+
+# Compilação e artefatos de build Java
 *.class
 bin/
+build/
+out/
+target/
 
-# Log file
+# Logs e arquivos de execução da JVM
 *.log
+hs_err_pid*
+replay_pid*
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
+# Arquivos de IDEs e Editores
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.nbproject/
+nbproject/
+.ctxt
 .mtj.tmp/
 
-# Package Files #
+# Variáveis de ambiente e segredos locais
+.env
+.env.local
+.env.*.local
+*.env
+!*.env.example
+!.env.example
+
+# Arquivos temporários e do Sistema Operacional
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*.tmp
+*.temp
+*.argfile
+
+# Pacotes (bloqueia jars genéricos, preserva dependências de lib/)
 *.jar
 !lib/*.jar
 *.war
@@ -20,8 +55,3 @@ bin/
 *.zip
 *.tar.gz
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-

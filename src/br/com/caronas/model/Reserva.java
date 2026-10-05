@@ -2,57 +2,45 @@ package br.com.caronas.model;
 
 import java.io.Serializable;
 
-/**
- * Entidade Reserva representando a tabela 'reservas' (modelo_banco.sql).
- * Controla as solicitações de vagas feitas por passageiros para uma carona.
- */
-public class Reserva implements Serializable, Cloneable {
-    public static final String STATUS_PENDENTE = "PENDENTE";
-    public static final String STATUS_ACEITA = "ACEITA";
-    public static final String STATUS_RECUSADA = "RECUSADA";
-    public static final String STATUS_CANCELADA = "CANCELADA";
-
+public class Reserva implements Serializable {
     private String id;
     private String carona_id;
     private String passageiro_id;
+    private String passageiro_nome;
+    private String passageiro_email;
+    private String passageiro_curso;
+    private String passageiro_telefone;
+    private String passageiro_foto;
+    private String passageiro_avaliacao;
+
     private int vagas_solicitadas;
     private String ponto_embarque;
-    private String status;
+    private String status; // "PENDENTE", "ACEITA", "RECUSADA", "CANCELADA"
     private String criado_em;
 
-    public Reserva() {
-        this.vagas_solicitadas = 1;
-        this.status = STATUS_PENDENTE;
-    }
+    private Carona carona; // Vinculada para exibir resumo ao passageiro
 
-    public Reserva(String id, String carona_id, String passageiro_id, int vagas_solicitadas,
+    public Reserva() {}
+
+    public Reserva(String id, String carona_id, String passageiro_id, String passageiro_nome,
+                   String passageiro_email, String passageiro_curso, String passageiro_telefone,
+                   String passageiro_foto, String passageiro_avaliacao, int vagas_solicitadas,
                    String ponto_embarque, String status, String criado_em) {
         this.id = id;
         this.carona_id = carona_id;
         this.passageiro_id = passageiro_id;
-        this.vagas_solicitadas = vagas_solicitadas > 0 ? vagas_solicitadas : 1;
+        this.passageiro_nome = passageiro_nome;
+        this.passageiro_email = passageiro_email;
+        this.passageiro_curso = passageiro_curso;
+        this.passageiro_telefone = passageiro_telefone;
+        this.passageiro_foto = passageiro_foto;
+        this.passageiro_avaliacao = passageiro_avaliacao;
+        this.vagas_solicitadas = vagas_solicitadas;
         this.ponto_embarque = ponto_embarque;
-        this.status = status != null ? status : STATUS_PENDENTE;
+        this.status = status;
         this.criado_em = criado_em;
     }
 
-    public boolean isPendente() {
-        return STATUS_PENDENTE.equalsIgnoreCase(this.status);
-    }
-
-    public boolean isAceita() {
-        return STATUS_ACEITA.equalsIgnoreCase(this.status);
-    }
-
-    public boolean isRecusada() {
-        return STATUS_RECUSADA.equalsIgnoreCase(this.status);
-    }
-
-    public boolean isCancelada() {
-        return STATUS_CANCELADA.equalsIgnoreCase(this.status);
-    }
-
-    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -75,6 +63,54 @@ public class Reserva implements Serializable, Cloneable {
 
     public void setPassageiro_id(String passageiro_id) {
         this.passageiro_id = passageiro_id;
+    }
+
+    public String getPassageiro_nome() {
+        return passageiro_nome;
+    }
+
+    public void setPassageiro_nome(String passageiro_nome) {
+        this.passageiro_nome = passageiro_nome;
+    }
+
+    public String getPassageiro_email() {
+        return passageiro_email;
+    }
+
+    public void setPassageiro_email(String passageiro_email) {
+        this.passageiro_email = passageiro_email;
+    }
+
+    public String getPassageiro_curso() {
+        return passageiro_curso;
+    }
+
+    public void setPassageiro_curso(String passageiro_curso) {
+        this.passageiro_curso = passageiro_curso;
+    }
+
+    public String getPassageiro_telefone() {
+        return passageiro_telefone;
+    }
+
+    public void setPassageiro_telefone(String passageiro_telefone) {
+        this.passageiro_telefone = passageiro_telefone;
+    }
+
+    public String getPassageiro_foto() {
+        return passageiro_foto;
+    }
+
+    public void setPassageiro_foto(String passageiro_foto) {
+        this.passageiro_foto = passageiro_foto;
+    }
+
+    public String getPassageiro_avaliacao() {
+        return passageiro_avaliacao;
+    }
+
+    public void setPassageiro_avaliacao(String passageiro_avaliacao) {
+        this.passageiro_avaliacao = passageiro_avaliacao;
     }
 
     public int getVagas_solicitadas() {
@@ -109,29 +145,27 @@ public class Reserva implements Serializable, Cloneable {
         this.criado_em = criado_em;
     }
 
-    @Override
-    public Reserva clone() {
-        try {
-            return (Reserva) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return new Reserva(id, carona_id, passageiro_id, vagas_solicitadas, ponto_embarque, status, criado_em);
-        }
+    public Carona getCarona() {
+        return carona;
     }
 
-    public String toJson() {
-        return "{\n"
-                + "  \"id\": " + jsonVal(id) + ",\n"
-                + "  \"carona_id\": " + jsonVal(carona_id) + ",\n"
-                + "  \"passageiro_id\": " + jsonVal(passageiro_id) + ",\n"
-                + "  \"vagas_solicitadas\": " + vagas_solicitadas + ",\n"
-                + "  \"ponto_embarque\": " + jsonVal(ponto_embarque) + ",\n"
-                + "  \"status\": " + jsonVal(status) + ",\n"
-                + "  \"criado_em\": " + jsonVal(criado_em) + "\n"
-                + "}";
+    public void setCarona(Carona carona) {
+        this.carona = carona;
     }
 
-    private String jsonVal(String val) {
-        if (val == null) return "null";
-        return "\"" + val.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+    public boolean isPendente() {
+        return "PENDENTE".equalsIgnoreCase(status);
+    }
+
+    public boolean isAceita() {
+        return "ACEITA".equalsIgnoreCase(status);
+    }
+
+    public boolean isRecusada() {
+        return "RECUSADA".equalsIgnoreCase(status);
+    }
+
+    public boolean isCancelada() {
+        return "CANCELADA".equalsIgnoreCase(status);
     }
 }

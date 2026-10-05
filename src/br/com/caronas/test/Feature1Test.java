@@ -29,10 +29,10 @@ public class Feature1Test {
             assert res.getData().getToken() != null : "Token JWT deve ser emitido";
             assert "ALUNO".equals(res.getData().getUsuario().getNivel()) : "Nível padrão deve ser ALUNO";
             assert "0.00".equals(res.getData().getUsuario().getMedia_avaliacao()) : "Média inicial deve ser 0.00";
-            System.out.println("✓ [PASS] POST /auth/cadastrar - 201 Created com emissão de token JWT");
+            System.out.println("[PASS] POST /auth/cadastrar - 201 Created com emissão de token JWT");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] POST /auth/cadastrar: " + t.getMessage());
+            System.err.println("[FAIL] POST /auth/cadastrar: " + t.getMessage());
             failed++;
         }
 
@@ -48,10 +48,10 @@ public class Feature1Test {
             );
             assert res.getStatusCode() == 409 : "Deveria retornar 409 Conflict";
             assert "Conflict".equals(res.getError().getErro()) : "Erro deve ser Conflict";
-            System.out.println("✓ [PASS] POST /auth/cadastrar - 409 Conflict ao tentar duplicar e-mail");
+            System.out.println("[PASS] POST /auth/cadastrar - 409 Conflict ao tentar duplicar e-mail");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] POST /auth/cadastrar (409 Conflict): " + t.getMessage());
+            System.err.println("[FAIL] POST /auth/cadastrar (409 Conflict): " + t.getMessage());
             failed++;
         }
 
@@ -67,10 +67,10 @@ public class Feature1Test {
             );
             assert res.getStatusCode() == 400 : "Deveria retornar 400 Bad Request";
             assert res.getError().getMensagens().size() >= 5 : "Deveria conter todas as validações";
-            System.out.println("✓ [PASS] POST /auth/cadastrar - 400 Bad Request para dados inválidos");
+            System.out.println("[PASS] POST /auth/cadastrar - 400 Bad Request para dados inválidos");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] POST /auth/cadastrar (400 Bad Request): " + t.getMessage());
+            System.err.println("[FAIL] POST /auth/cadastrar (400 Bad Request): " + t.getMessage());
             failed++;
         }
 
@@ -80,10 +80,10 @@ public class Feature1Test {
             assert res.getStatusCode() == 200 : "Deveria retornar 200 OK";
             assert res.getData().getToken() != null : "Token JWT deve ser retornado";
             assert "carlos.edu@gmail.com".equals(res.getData().getUsuario().getEmail());
-            System.out.println("✓ [PASS] POST /auth/login - 200 OK com autenticação e token");
+            System.out.println("[PASS] POST /auth/login - 200 OK com autenticação e token");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] POST /auth/login: " + t.getMessage());
+            System.err.println("[FAIL] POST /auth/login: " + t.getMessage());
             failed++;
         }
 
@@ -92,10 +92,10 @@ public class Feature1Test {
             ApiResponse<AuthResponse> res = api.login("carlos.edu@gmail.com", "senhaErrada999");
             assert res.getStatusCode() == 401 : "Deveria retornar 401 Unauthorized";
             assert "Unauthorized".equals(res.getError().getErro());
-            System.out.println("✓ [PASS] POST /auth/login - 401 Unauthorized com credenciais incorretas");
+            System.out.println("[PASS] POST /auth/login - 401 Unauthorized com credenciais incorretas");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] POST /auth/login (401 Unauthorized): " + t.getMessage());
+            System.err.println("[FAIL] POST /auth/login (401 Unauthorized): " + t.getMessage());
             failed++;
         }
 
@@ -105,10 +105,10 @@ public class Feature1Test {
             ApiResponse<Usuario> res = api.getMe();
             assert res.getStatusCode() == 200 : "Deveria retornar 200 OK";
             assert res.getData().getInstituicao_nome() != null : "Instituição deve vir populada";
-            System.out.println("✓ [PASS] GET /usuarios/me - 200 OK com dados cadastrais e instituição");
+            System.out.println("[PASS] GET /usuarios/me - 200 OK com dados cadastrais e instituição");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] GET /usuarios/me: " + t.getMessage());
+            System.err.println("[FAIL] GET /usuarios/me: " + t.getMessage());
             failed++;
         }
 
@@ -121,10 +121,10 @@ public class Feature1Test {
             assert "62988887777".equals(res.getData().getTelefone());
             assert "Engenharia de Software (8º Período)".equals(res.getData().getCurso());
             assert "ALUNO".equals(res.getData().getNivel()) : "Nível não deve ser alterado pelo aluno";
-            System.out.println("✓ [PASS] PUT /usuarios/me - 200 OK com atualização de campos permitidos");
+            System.out.println("[PASS] PUT /usuarios/me - 200 OK com atualização de campos permitidos");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] PUT /usuarios/me: " + t.getMessage());
+            System.err.println("[FAIL] PUT /usuarios/me: " + t.getMessage());
             failed++;
         }
 
@@ -134,10 +134,10 @@ public class Feature1Test {
             ApiResponse<PageResult<Usuario>> res = api.getUsuariosAdmin("", "TODOS", 1, 10);
             assert res.getStatusCode() == 403 : "Deveria retornar 403 Forbidden para Aluno";
             assert "Forbidden".equals(res.getError().getErro());
-            System.out.println("✓ [PASS] GET /admin/usuarios - 403 Forbidden quando acessado por perfil ALUNO");
+            System.out.println("[PASS] GET /admin/usuarios - 403 Forbidden quando acessado por perfil ALUNO");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] GET /admin/usuarios (403 Forbidden): " + t.getMessage());
+            System.err.println("[FAIL] GET /admin/usuarios (403 Forbidden): " + t.getMessage());
             failed++;
         }
 
@@ -147,10 +147,10 @@ public class Feature1Test {
             ApiResponse<PageResult<Usuario>> res = api.getUsuariosAdmin("Carlos", "TODOS", 1, 10);
             assert res.getStatusCode() == 200 : "Deveria retornar 200 OK para Admin";
             assert res.getData().getUsuarios().size() > 0 : "Deve encontrar registros com filtro 'Carlos'";
-            System.out.println("✓ [PASS] GET /admin/usuarios - 200 OK com busca ILIKE e paginação para ADMIN");
+            System.out.println("[PASS] GET /admin/usuarios - 200 OK com busca ILIKE e paginação para ADMIN");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] GET /admin/usuarios (Admin): " + t.getMessage());
+            System.err.println("[FAIL] GET /admin/usuarios (Admin): " + t.getMessage());
             failed++;
         }
 
@@ -160,17 +160,17 @@ public class Feature1Test {
             ApiResponse<Usuario> res = api.updateUsuarioAdmin(
                     "u1u2u3u4-0000-0000-0000-000000000000",
                     "Carlos Eduardo Promovido",
-                    "carlos.promovido@faculdade.br",
+                    "carlos.admin@faculdade.br",
                     "ADMIN",
                     "62999998888",
                     "Docente / Coordenação"
             );
             assert res.getStatusCode() == 200 : "Deveria retornar 200 OK";
             assert "ADMIN".equals(res.getData().getNivel()) : "Nível deve ter sido alterado para ADMIN";
-            System.out.println("✓ [PASS] PUT /admin/usuarios/:id - 200 OK com promoção de nível RBAC");
+            System.out.println("[PASS] PUT /admin/usuarios/:id - 200 OK com promoção de nível RBAC");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] PUT /admin/usuarios/:id: " + t.getMessage());
+            System.err.println("[FAIL] PUT /admin/usuarios/:id: " + t.getMessage());
             failed++;
         }
 
@@ -180,10 +180,10 @@ public class Feature1Test {
             Usuario ana = api.getUsuarioLogado();
             ApiResponse<String> res = api.deleteUsuarioAdmin(ana.getId()); // Tenta deletar a si mesma
             assert res.getStatusCode() == 400 : "Deveria retornar 400 Bad Request para auto-exclusão";
-            System.out.println("✓ [PASS] DELETE /admin/usuarios/:id - 400 Bad Request ao tentar auto-bloqueio");
+            System.out.println("[PASS] DELETE /admin/usuarios/:id - 400 Bad Request ao tentar auto-bloqueio");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] DELETE /admin/usuarios/:id (Auto-bloqueio): " + t.getMessage());
+            System.err.println("[FAIL] DELETE /admin/usuarios/:id (Auto-bloqueio): " + t.getMessage());
             failed++;
         }
 
@@ -192,10 +192,10 @@ public class Feature1Test {
             api.login("ana.lima@faculdade.br", "admin123");
             ApiResponse<String> res = api.deleteUsuarioAdmin("u1u2u3u4-0000-0000-0000-000000000000");
             assert res.getStatusCode() == 200 : "Deveria retornar 200 OK";
-            System.out.println("✓ [PASS] DELETE /admin/usuarios/:id - 200 OK ao excluir usuário pelo Administrador");
+            System.out.println("[PASS] DELETE /admin/usuarios/:id - 200 OK ao excluir usuário pelo Administrador");
             passed++;
         } catch (Throwable t) {
-            System.err.println("✗ [FAIL] DELETE /admin/usuarios/:id: " + t.getMessage());
+            System.err.println("[FAIL] DELETE /admin/usuarios/:id: " + t.getMessage());
             failed++;
         }
 

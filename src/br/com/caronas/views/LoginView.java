@@ -36,7 +36,7 @@ public class LoginView extends JPanel {
         // Main Card Container
         RoundedPanel card = new RoundedPanel(20);
         card.setLayout(new BorderLayout());
-        card.setPreferredSize(new Dimension(860, 520));
+        card.setPreferredSize(new Dimension(880, 540));
 
         // LEFT PANEL: Hero Banner
         JPanel heroPanel = new JPanel() {
@@ -50,7 +50,6 @@ public class LoginView extends JPanel {
                 );
                 g2.setPaint(gp);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                // Cover right corners so card looks cohesive
                 g2.fillRect(getWidth() - 20, 0, 20, getHeight());
 
                 // Decorative circles
@@ -63,38 +62,40 @@ public class LoginView extends JPanel {
             }
         };
         heroPanel.setOpaque(false);
-        heroPanel.setPreferredSize(new Dimension(380, 520));
+        heroPanel.setPreferredSize(new Dimension(380, 540));
         heroPanel.setLayout(new BorderLayout());
-        heroPanel.setBorder(new EmptyBorder(40, 36, 40, 36));
+        heroPanel.setBorder(new EmptyBorder(36, 32, 36, 32));
 
         JPanel heroContent = new JPanel();
         heroContent.setLayout(new BoxLayout(heroContent, BoxLayout.Y_AXIS));
         heroContent.setOpaque(false);
 
-        JLabel lblHeroIcon = new JLabel("🚗💨");
-        lblHeroIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 46));
+        JLabel lblHeroTag = new JLabel("UniRide");
+        lblHeroTag.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        lblHeroTag.setForeground(Color.WHITE);
 
-        JLabel lblHeroTitle = new JLabel("<html>Caronas<br>Universitárias</html>");
-        lblHeroTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        lblHeroTitle.setForeground(Color.WHITE);
+        JLabel lblHeroTitle = new JLabel("<html>Caronas<br>Universitarias</html>");
+        lblHeroTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblHeroTitle.setForeground(new Color(230, 240, 255));
 
-        JLabel lblHeroDesc = new JLabel("<html>Plataforma acadêmica com <b>Autenticação JWT</b>, gestão de perfis e <b>Controle de Acesso RBAC</b> conforme a Especificação Técnica FT01/FT02/FT03.</html>");
+        JLabel lblHeroDesc = new JLabel("<html>Plataforma academica de mobilidade com <b>Autenticacao JWT</b>, gestao de caronas, reservas de vagas e <b>Controle RBAC</b>.</html>");
         lblHeroDesc.setFont(AppTheme.FONT_BODY);
         lblHeroDesc.setForeground(new Color(240, 240, 255));
-        lblHeroDesc.setBorder(new EmptyBorder(16, 0, 16, 0));
+        lblHeroDesc.setBorder(new EmptyBorder(14, 0, 14, 0));
 
-        JPanel featureList = new JPanel(new GridLayout(3, 1, 0, 10));
+        JPanel featureList = new JPanel(new GridLayout(4, 1, 0, 8));
         featureList.setOpaque(false);
-        featureList.add(createFeatureItem("🔒 Tokens JWT com assinatura segura"));
-        featureList.add(createFeatureItem("👥 Perfis ALUNO e ADMIN"));
-        featureList.add(createFeatureItem("🛡️ Regras e Auditoria RBAC"));
+        featureList.add(createFeatureItem("[*] Tokens JWT com seguranca"));
+        featureList.add(createFeatureItem("[*] Gestao de Caronas e Vagas"));
+        featureList.add(createFeatureItem("[*] Avaliacoes entre Alunos"));
+        featureList.add(createFeatureItem("[*] Perfis ALUNO e ADMIN"));
 
-        heroContent.add(lblHeroIcon);
-        heroContent.add(Box.createVerticalStrut(16));
+        heroContent.add(lblHeroTag);
+        heroContent.add(Box.createVerticalStrut(4));
         heroContent.add(lblHeroTitle);
-        heroContent.add(Box.createVerticalStrut(8));
+        heroContent.add(Box.createVerticalStrut(6));
         heroContent.add(lblHeroDesc);
-        heroContent.add(Box.createVerticalStrut(12));
+        heroContent.add(Box.createVerticalStrut(8));
         heroContent.add(featureList);
 
         heroPanel.add(heroContent, BorderLayout.CENTER);
@@ -103,56 +104,73 @@ public class LoginView extends JPanel {
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setOpaque(false);
-        formPanel.setBorder(new EmptyBorder(40, 44, 40, 44));
+        formPanel.setBorder(new EmptyBorder(32, 38, 32, 38));
 
-        JLabel lblWelcome = new JLabel("Bem-vindo de volta! 👋");
+        JLabel lblWelcome = new JLabel("Acessar Plataforma");
         lblWelcome.setFont(AppTheme.FONT_TITLE);
         lblWelcome.setForeground(AppTheme.getTextPrimary());
 
-        JLabel lblSub = new JLabel("Digite suas credenciais ou use o login rápido");
+        JLabel lblSub = new JLabel("Digite suas credenciais ou selecione um usuario de teste:");
         lblSub.setFont(AppTheme.FONT_BODY);
         lblSub.setForeground(AppTheme.getTextSecondary());
 
         // Inputs
-        JLabel lblEmail = new JLabel("E-MAIL");
+        JLabel lblEmail = new JLabel("E-MAIL ACADEMICO:");
         lblEmail.setFont(AppTheme.FONT_SMALL_BOLD);
         lblEmail.setForeground(AppTheme.getTextSecondary());
         txtEmail = new ModernTextField("carlos.edu@gmail.com");
 
-        JLabel lblSenha = new JLabel("SENHA");
+        JLabel lblSenha = new JLabel("SENHA:");
         lblSenha.setFont(AppTheme.FONT_SMALL_BOLD);
         lblSenha.setForeground(AppTheme.getTextSecondary());
         txtSenha = new ModernPasswordField("senhaSegura123");
 
-        btnLogin = new RoundedButton("Entrar na Plataforma", RoundedButton.ButtonStyle.PRIMARY);
-        btnLogin.setPreferredSize(new Dimension(0, 42));
-        btnLogin.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+        btnLogin = new RoundedButton("Entrar no Sistema", RoundedButton.ButtonStyle.PRIMARY);
+        btnLogin.setPreferredSize(new Dimension(0, 40));
+        btnLogin.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         btnLogin.addActionListener(e -> executeLogin());
 
-        // Quick Demo Logins
-        JPanel demoPanel = new JPanel(new GridLayout(1, 2, 8, 0));
+        // Quick Demo Logins (2x2 Grid)
+        JPanel demoPanel = new JPanel(new GridLayout(2, 2, 8, 6));
         demoPanel.setOpaque(false);
 
-        RoundedButton btnDemoAluno = new RoundedButton("🎓 Carlos (Aluno)", RoundedButton.ButtonStyle.SECONDARY);
-        btnDemoAluno.setFont(AppTheme.FONT_SMALL_BOLD);
-        btnDemoAluno.addActionListener(e -> {
+        RoundedButton btnCarlos = new RoundedButton("[Aluno] Carlos", RoundedButton.ButtonStyle.SECONDARY);
+        btnCarlos.setFont(AppTheme.FONT_SMALL_BOLD);
+        btnCarlos.addActionListener(e -> {
             txtEmail.setText("carlos.edu@gmail.com");
             txtSenha.setText("senhaSegura123");
             executeLogin();
         });
 
-        RoundedButton btnDemoAdmin = new RoundedButton("👑 Ana (Admin)", RoundedButton.ButtonStyle.ACCENT);
-        btnDemoAdmin.setFont(AppTheme.FONT_SMALL_BOLD);
-        btnDemoAdmin.addActionListener(e -> {
+        RoundedButton btnMariana = new RoundedButton("[Aluna] Mariana", RoundedButton.ButtonStyle.SECONDARY);
+        btnMariana.setFont(AppTheme.FONT_SMALL_BOLD);
+        btnMariana.addActionListener(e -> {
+            txtEmail.setText("mariana.oli@gmail.com");
+            txtSenha.setText("senha123");
+            executeLogin();
+        });
+
+        RoundedButton btnLucas = new RoundedButton("[Aluno] Lucas", RoundedButton.ButtonStyle.SECONDARY);
+        btnLucas.setFont(AppTheme.FONT_SMALL_BOLD);
+        btnLucas.addActionListener(e -> {
+            txtEmail.setText("lucas.rib@gmail.com");
+            txtSenha.setText("senha123");
+            executeLogin();
+        });
+
+        RoundedButton btnAdmin = new RoundedButton("[Admin] Ana", RoundedButton.ButtonStyle.ACCENT);
+        btnAdmin.setFont(AppTheme.FONT_SMALL_BOLD);
+        btnAdmin.addActionListener(e -> {
             txtEmail.setText("ana.lima@faculdade.br");
             txtSenha.setText("admin123");
             executeLogin();
         });
 
-        demoPanel.add(btnDemoAluno);
-        demoPanel.add(btnDemoAdmin);
+        demoPanel.add(btnCarlos);
+        demoPanel.add(btnMariana);
+        demoPanel.add(btnLucas);
+        demoPanel.add(btnAdmin);
 
-        // Status / Error message
         lblStatus = new JLabel(" ", SwingConstants.CENTER);
         lblStatus.setFont(AppTheme.FONT_SMALL_BOLD);
         lblStatus.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -160,7 +178,7 @@ public class LoginView extends JPanel {
         // Link to register
         JPanel footerLink = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
         footerLink.setOpaque(false);
-        JLabel lblNoAccount = new JLabel("Não tem uma conta?");
+        JLabel lblNoAccount = new JLabel("Nao tem uma conta?");
         lblNoAccount.setFont(AppTheme.FONT_BODY);
         lblNoAccount.setForeground(AppTheme.getTextSecondary());
 
@@ -172,33 +190,33 @@ public class LoginView extends JPanel {
         footerLink.add(lblNoAccount);
         footerLink.add(btnCadastre);
 
-        // Build form layout
+        // Assemble form layout
         formPanel.add(lblWelcome);
-        formPanel.add(Box.createVerticalStrut(4));
+        formPanel.add(Box.createVerticalStrut(2));
         formPanel.add(lblSub);
-        formPanel.add(Box.createVerticalStrut(20));
+        formPanel.add(Box.createVerticalStrut(14));
 
         formPanel.add(lblEmail);
         formPanel.add(Box.createVerticalStrut(4));
         formPanel.add(txtEmail);
-        formPanel.add(Box.createVerticalStrut(12));
+        formPanel.add(Box.createVerticalStrut(10));
 
         formPanel.add(lblSenha);
         formPanel.add(Box.createVerticalStrut(4));
         formPanel.add(txtSenha);
-        formPanel.add(Box.createVerticalStrut(16));
+        formPanel.add(Box.createVerticalStrut(14));
 
         formPanel.add(btnLogin);
         formPanel.add(Box.createVerticalStrut(12));
 
-        JLabel lblDemoTitle = new JLabel("⚡ Atalhos para Teste / Avaliação:");
+        JLabel lblDemoTitle = new JLabel("Atalhos Rapidos para Teste:");
         lblDemoTitle.setFont(AppTheme.FONT_SMALL_BOLD);
         lblDemoTitle.setForeground(AppTheme.getTextMuted());
         formPanel.add(lblDemoTitle);
         formPanel.add(Box.createVerticalStrut(6));
         formPanel.add(demoPanel);
 
-        formPanel.add(Box.createVerticalStrut(10));
+        formPanel.add(Box.createVerticalStrut(8));
         formPanel.add(lblStatus);
         formPanel.add(Box.createVerticalGlue());
         formPanel.add(footerLink);
@@ -211,13 +229,19 @@ public class LoginView extends JPanel {
     }
 
     private JPanel createFeatureItem(String text) {
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         p.setOpaque(false);
         JLabel l = new JLabel(text);
         l.setFont(AppTheme.FONT_SMALL);
         l.setForeground(Color.WHITE);
         p.add(l);
         return p;
+    }
+
+    public void clearFields() {
+        txtEmail.setText("");
+        txtSenha.setText("");
+        lblStatus.setText(" ");
     }
 
     private void executeLogin() {
@@ -227,7 +251,7 @@ public class LoginView extends JPanel {
         if (email.isEmpty() || senha.isEmpty()) {
             lblStatus.setText("Preencha o e-mail e a senha.");
             lblStatus.setForeground(ModernColors.WARNING);
-            ToastNotification.show(this, "Atenção", "Preencha o e-mail e a senha.", ToastNotification.ToastType.WARNING);
+            ToastNotification.show(this, "Atencao", "Preencha o e-mail e a senha.", ToastNotification.ToastType.WARNING);
             return;
         }
 
@@ -240,7 +264,7 @@ public class LoginView extends JPanel {
         } else {
             lblStatus.setText(resp.getError().getMensagemFormatada());
             lblStatus.setForeground(ModernColors.DANGER);
-            ToastNotification.show(this, "Erro de Autenticação (" + resp.getStatusCode() + ")", resp.getError().getMensagemFormatada(), ToastNotification.ToastType.ERROR);
+            ToastNotification.show(this, "Erro de Autenticacao (" + resp.getStatusCode() + ")", resp.getError().getMensagemFormatada(), ToastNotification.ToastType.ERROR);
         }
     }
 }

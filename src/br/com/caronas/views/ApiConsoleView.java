@@ -51,11 +51,11 @@ public class ApiConsoleView extends JPanel implements ApiService.ApiCallListener
         JPanel titlePanel = new JPanel(new GridLayout(2, 1, 0, 2));
         titlePanel.setOpaque(false);
 
-        JLabel lblTitle = new JLabel("📡 Console de Auditoria e Inspeção de Rotas HTTP / JWT");
+        JLabel lblTitle = new JLabel("Console de Auditoria e Inspecao de Rotas HTTP / JWT");
         lblTitle.setFont(AppTheme.FONT_SUBTITLE);
         lblTitle.setForeground(AppTheme.getTextPrimary());
 
-        JLabel lblSub = new JLabel("Monitoramento em tempo real dos contratos REST e respostas JSON da Especificação Técnica");
+        JLabel lblSub = new JLabel("Monitoramento em tempo real dos contratos REST e respostas JSON da Especificacao Tecnica");
         lblSub.setFont(AppTheme.FONT_SMALL);
         lblSub.setForeground(AppTheme.getTextSecondary());
 
@@ -65,14 +65,14 @@ public class ApiConsoleView extends JPanel implements ApiService.ApiCallListener
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         actionPanel.setOpaque(false);
 
-        RoundedButton btnClear = new RoundedButton("🗑️ Limpar Histórico", RoundedButton.ButtonStyle.GHOST);
+        RoundedButton btnClear = new RoundedButton("Limpar Historico", RoundedButton.ButtonStyle.GHOST);
         btnClear.addActionListener(e -> {
             logs.clear();
             tableModel.fireTableDataChanged();
             clearDetails();
         });
 
-        RoundedButton btnCopyJson = new RoundedButton("📋 Copiar Resposta", RoundedButton.ButtonStyle.SECONDARY);
+        RoundedButton btnCopyJson = new RoundedButton("Copiar Resposta", RoundedButton.ButtonStyle.SECONDARY);
         btnCopyJson.addActionListener(e -> {
             String txt = txtResponseDetails.getText();
             if (!txt.isEmpty()) {
@@ -128,7 +128,7 @@ public class ApiConsoleView extends JPanel implements ApiService.ApiCallListener
 
         badgeSelectedMethod = BadgeLabel.forMethod("GET");
         badgeSelectedStatus = BadgeLabel.forStatus(200);
-        lblSelectedEndpoint = new JLabel("Selecione uma requisição acima para inspecionar");
+        lblSelectedEndpoint = new JLabel("Selecione uma requisicao acima para inspecionar");
         lblSelectedEndpoint.setFont(AppTheme.FONT_BODY_BOLD);
 
         detailHeader.add(badgeSelectedMethod);
@@ -222,7 +222,7 @@ public class ApiConsoleView extends JPanel implements ApiService.ApiCallListener
     }
 
     private void clearDetails() {
-        lblSelectedEndpoint.setText("Selecione uma requisição acima para inspecionar");
+        lblSelectedEndpoint.setText("Selecione uma requisicao acima para inspecionar");
         txtRequestDetails.setText("");
         txtResponseDetails.setText("");
     }
@@ -238,7 +238,7 @@ public class ApiConsoleView extends JPanel implements ApiService.ApiCallListener
     }
 
     private class LogsTableModel extends AbstractTableModel {
-        private final String[] cols = {"Hora", "Método", "Rota / Endpoint", "Status HTTP", "Resultado"};
+        private final String[] cols = {"Hora", "Metodo", "Rota / Endpoint", "Status HTTP", "Resultado"};
 
         @Override
         public int getRowCount() {
@@ -269,7 +269,7 @@ public class ApiConsoleView extends JPanel implements ApiService.ApiCallListener
                 case 3:
                     return r.getStatusCode();
                 case 4:
-                    return r.isSuccess() ? "✓ Sucesso" : ("✕ " + (r.getError() != null ? r.getError().getErro() : "Erro"));
+                    return r.isSuccess() ? "[OK] Sucesso" : ("[ERRO] " + (r.getError() != null ? r.getError().getErro() : "Erro"));
                 default:
                     return "";
             }
