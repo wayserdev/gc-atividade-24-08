@@ -1,4 +1,5 @@
 -- =========================================================
+-- Versão 1.0.0 - Script de banco de dados revisado por Rowan
 -- BANCO DE DADOS: MVP CARONA UNIVERSITÁRIA
 -- PostgreSQL
 -- =========================================================
