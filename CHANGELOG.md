@@ -1,5 +1,15 @@
 # Histórico de mudanças
 
+## [Não versionado]
+
+### Adicionado
+
+- Guia de entrega das atividades de CI e release (`docs/ENTREGA_GC.md`), com roteiro de gravação e evidências — PR #14.
+
+### Corrigido
+
+- Revisão e organização dos scripts de banco de dados (`modelo_banco.sql` e `seed_dados.sql`), rastreada na issue #9 — PR #10.
+
 ## 1.2.0
 
 ### Adicionado
