@@ -1,5 +1,7 @@
 # 🚗 UniRide — Sistema Completo de Caronas Universitárias
 
+Para o estado do CI, releases, evidências e roteiro de gravação das atividades de GC, consulte [o guia de entrega](docs/ENTREGA_GC.md).
+
 Plataforma desktop completa para mobilidade acadêmica e caronas solidárias compartilhadas entre estudantes e docentes universitários. Desenvolvido com interface gráfica moderna em **Java Swing**, tema **FlatLaf**, controle de acesso **RBAC**, autenticação por tokens **JWT**, simulação de arquitetura **REST API**, gestão de veículos, busca com múltiplos filtros, solicitação e aprovação de reservas, máquina de estados da carona e sistema mútuo de avaliações.
 
 ---
