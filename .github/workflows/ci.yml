@@ -22,3 +22,10 @@ jobs:
         run: sha256sum --check dependencies.sha256
       - name: Compilar e executar testes com assertions
         run: bash testar.sh
+      - name: Validar pacote distribuivel
+        run: bash empacotar.sh dev
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uniride-dev
+          path: dist/uniride-dev.zip*
+          if-no-files-found: error
