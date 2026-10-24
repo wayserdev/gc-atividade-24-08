@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Testar empacotar e publicar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Gerar distribuicao e testar os JARs
+        run: bash empacotar.sh "$GITHUB_REF_NAME"
+      - name: Publicar Release com notas e artefato
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/uniride-$GITHUB_REF_NAME.zip" \
+            "dist/uniride-$GITHUB_REF_NAME.zip.sha256" \
+            --verify-tag --title "UniRide $GITHUB_REF_NAME" \
+            --notes-file RELEASE_NOTES.md
