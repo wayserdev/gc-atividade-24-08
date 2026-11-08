@@ -26,7 +26,7 @@ Plataforma desktop completa para mobilidade acadêmica e caronas solidárias com
 **Disciplina:** Gerência de Configuração  
 **Instituição:** UEG / UFG / IFG
 
----
+----
 
 ## 📋 Pré-requisitos
 
